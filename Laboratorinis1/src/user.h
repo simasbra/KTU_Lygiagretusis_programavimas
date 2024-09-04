@@ -13,17 +13,17 @@ public:
 	User();
 	User(std::string name, int year, double dayMonth);
 
-	std::string getName();
-	int getYear();
-	double getDayMonth();
+	std::string get_name();
+	int get_year();
+	double get_day_month();
 
-	void setName(std::string name);
-	void setYear(int year);
-	void setDayMonth(double dayMonth);
+	void set_name(std::string name);
+	void set_year(int year);
+	void set_day_month(double dayMonth);
 
-	void printUser(User *user);
-	void addUser(User *users[], int *maxSize, int *currentSize, std::string name, int year, double dayMonth);
-
+	static void print_user(User *user);
+	static void add_user(User *users[], const int *maxSize, int *currentSize, std::string name, int year, double dayMonth);
+	static User remove_user();
 };
 
 #endif
