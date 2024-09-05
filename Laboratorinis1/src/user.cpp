@@ -30,13 +30,13 @@ void User::set_day_month(double dayMonth) {
 	this->dayMonth = dayMonth;
 }
 
-void User::print_user(User *user) {
-	printf("Name: %s, Year: %d, DayMonth: %lf", user->get_name().c_str(), user->get_year(), user->get_day_month());
+void User::print_user(User *pUser) {
+	printf("Name: %s, Year: %d, DayMonth: %.2lf", pUser->get_name().c_str(), pUser->get_year(), pUser->get_day_month());
 }
 
-void User::add_user(User *users[], const int *maxSize, int *currentSize, string name, int year, double dayMonth) {
-	if (*currentSize <= *maxSize) {
-		*users[*currentSize] = User(name, year, dayMonth);
-		(*currentSize)++;
+void User::add_user(User *pUsers[], const int &maxSize, int &currentSize, string name, int year, double dayMonth) {
+	if (currentSize <= maxSize) {
+		*pUsers[currentSize] = User(name, year, dayMonth);
+		(currentSize)++;
 	}
 }

@@ -21,8 +21,8 @@ public:
 	void set_year(int year);
 	void set_day_month(double dayMonth);
 
-	static void print_user(User *user);
-	static void add_user(User *users[], const int *maxSize, int *currentSize, std::string name, int year, double dayMonth);
+	static void print_user(User *pUser);
+	static void add_user(User *pUsers[], const int &maxSize, int &currentSize, std::string name, int year, double dayMonth);
 	static User remove_user();
 };
 
