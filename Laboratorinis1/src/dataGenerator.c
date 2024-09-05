@@ -12,9 +12,10 @@ int main(void) {
 
 void fill_array(cJSON *pUsers) {
 	const int size = 25;
+
 	char *names[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys" };
 
 	for (int i = 0; i < size; i++) {
-
+		cJSON_AddStringToObject(pUsers, "name", names[i % sizeof(names) / sizeof(names[i])]);
 	}
 }
