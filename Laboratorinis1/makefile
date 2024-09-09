@@ -3,17 +3,11 @@ CCXFLAGS = -Wall -Wextra -Werror -pedantic
 SRCDIR = ./src/
 SRCS = $(SRCDIR)main.cpp $(SRCDIR)user.cpp
 TARGET = users
+RAPIDJSON_DIR = $(SRCDIR)rapidjson
+INCLUDES = -I$(RAPIDJSON_DIR)
 
 $(TARGET): $(SRCS)
-	$(CC) $(CCXFLAGS) -o $(TARGET) $(SRCS)
+	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET) $(SRCS)
 
 clean:
 	rm -f $(TARGET)
-
-dataGenerator: $(SRCDIR)dataGenerator.c $(SRCDIR)cjson/cJSON.c
-	gcc -o dataGenerator $(SRCDIR)dataGenerator.c $(SRCDIR)cjson/cJSON.c -I$(SRCDIR)cjson -Wall -Wextra -Werror -pedantic
-
-clean_all: clean
-	rm -f $(SRCDIR)cjson/*.o
-	rm -f $(SRCDIR)cjson/*.so
-	rm -f $(SRCDIR)cjson/*.a

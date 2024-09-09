@@ -1,4 +1,5 @@
-[{
+{ "users":
+	[ {
 		"name":	"Jonas",
 		"year":	1990,
 		"dayMonth":	1.01
@@ -399,3 +400,4 @@
 		"year":	1999,
 		"dayMonth":	7.04
 	}]
+}

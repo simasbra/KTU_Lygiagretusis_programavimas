@@ -12,6 +12,7 @@ private:
 public:
 	User();
 	User(std::string name, int year, double dayMonth);
+	~User();
 
 	std::string get_name();
 	int get_year();
@@ -23,7 +24,9 @@ public:
 
 	static void print_user(User *pUser);
 	static void add_user(User *pUsers[], const int &maxSize, int &currentSize, std::string name, int year, double dayMonth);
-	static User remove_user();
+	User remove_user();
+
+	static void read_file(std::string filePath);
 };
 
 #endif
