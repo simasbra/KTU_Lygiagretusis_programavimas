@@ -26,7 +26,7 @@ public:
 	static void add_user(User *pUsers[], const int &maxSize, int &currentSize, std::string name, int year, double dayMonth);
 	User remove_user();
 
-	static void read_file(std::string filePath);
+	static void read_file(std::string filePath, User *pUsers[], const int &maxSize, int &currentSize);
 };
 
 #endif

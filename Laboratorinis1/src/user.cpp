@@ -41,7 +41,7 @@ void User::print_user(User *pUser) {
 }
 
 void User::add_user(User *pUsers[], const int &maxSize, int &currentSize, string name, int year, double dayMonth) {
-	if (currentSize <= maxSize) {
+	if (currentSize < maxSize) {
 		*pUsers[currentSize] = User(name, year, dayMonth);
 		(currentSize)++;
 	}
@@ -51,7 +51,7 @@ void User::add_user(User *pUsers[], const int &maxSize, int &currentSize, string
 /**/
 /*}*/
 
-void User::read_file(string filePath) {
+void User::read_file(string filePath, User *pUsers[], const int &maxSize, int &currentSize) {
 	FILE *pFile = fopen(filePath.c_str(), "r");
 	if (pFile == NULL) {
 		perror("Failed to open a file\n");
@@ -71,12 +71,17 @@ void User::read_file(string filePath) {
 
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		const rapidjson::Value &usersArray = jsonDocument["users"];
+
 		for (rapidjson::SizeType i = 0; i < usersArray.Size(); ++i) {
 			const rapidjson::Value &user = usersArray[i];
+
 			if (user.HasMember("name") && user["name"].IsString()
 				&& user.HasMember("year") && user["year"].IsInt()
 				&& user.HasMember("dayMonth") && user["dayMonth"].IsDouble()) {
-				printf("Name: %s, Year: %d, DayMonth: %.2lf\n", user["name"].GetString(), user["year"].GetInt(), user["dayMonth"].GetDouble());
+				const string name = user["name"].GetString();
+				const int year = user["year"].GetInt();
+				const double dayMonth = user["dayMonth"].GetDouble();
+				add_user(pUsers, maxSize, currentSize, name, year, dayMonth);
 			}
 		}
 	}
