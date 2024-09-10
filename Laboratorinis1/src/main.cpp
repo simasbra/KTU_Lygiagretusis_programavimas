@@ -1,5 +1,4 @@
 #include "usersMonitor.h"
-#include "user.h"
 
 using namespace std;
 

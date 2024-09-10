@@ -20,6 +20,7 @@ void UsersMonitor::add_user(User userNew) {
 	if (currentSize >= maxSize) {
 		return;
 	}
+
 	users[currentSize] = userNew;
 	currentSize++;
 }
@@ -47,6 +48,7 @@ User UsersMonitor::remove_user_last() {
 	if (currentSize <= 0) {
 		return User();
 	}
+
 	User userTemporary = users[--currentSize];
 	users[currentSize] = User();
 	return userTemporary;
@@ -66,19 +68,15 @@ void UsersMonitor::read_file(string filePath) {
 	fclose(pFile);
 
 	if (jsonDocument.HasParseError()) {
-		perror("Failet to parse into Document\n");
+		perror("Failed to parse into Document\n");
 		return;
 	}
-
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		const rapidjson::Value &usersArray = jsonDocument["users"];
 
 		for (rapidjson::SizeType i = 0; i < usersArray.Size(); ++i) {
 			const rapidjson::Value &userCurrent = usersArray[i];
-
-			if (userCurrent.HasMember("name") && userCurrent["name"].IsString()
-				&& userCurrent.HasMember("year") && userCurrent["year"].IsInt()
-				&& userCurrent.HasMember("dayMonth") && userCurrent["dayMonth"].IsDouble()) {
+			if (userCurrent.HasMember("name") && userCurrent["name"].IsString() && userCurrent.HasMember("year") && userCurrent["year"].IsInt() && userCurrent.HasMember("dayMonth") && userCurrent["dayMonth"].IsDouble()) {
 				const string name = userCurrent["name"].GetString();
 				const int year = userCurrent["year"].GetInt();
 				const double dayMonth = userCurrent["dayMonth"].GetDouble();
