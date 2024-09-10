@@ -22,11 +22,7 @@ public:
 	void set_year(int year);
 	void set_day_month(double dayMonth);
 
-	static void print_user(User *pUser);
-	static void add_user(User *pUsers[], const int &maxSize, int &currentSize, std::string name, int year, double dayMonth);
-	User remove_user();
-
-	static void read_file(std::string filePath, User *pUsers[], const int &maxSize, int &currentSize);
+	static void print_user(User &pUser);
 };
 
 #endif

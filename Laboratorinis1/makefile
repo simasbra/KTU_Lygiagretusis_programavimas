@@ -1,7 +1,7 @@
 CC = g++
 CCXFLAGS = -Wall -Wextra -Werror -pedantic
 SRCDIR = ./src/
-SRCS = $(SRCDIR)main.cpp $(SRCDIR)user.cpp
+SRCS = $(SRCDIR)main.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp
 TARGET = users
 RAPIDJSON_DIR = $(SRCDIR)rapidjson
 INCLUDES = -I$(RAPIDJSON_DIR)
