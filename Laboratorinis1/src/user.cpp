@@ -33,6 +33,6 @@ void User::set_day_month(double dayMonth) {
 	this->dayMonth = dayMonth;
 }
 
-void User::print_user(User &pUser) {
-	printf("Name: %s, Year: %d, DayMonth: %.2lf\n", pUser.get_name().c_str(), pUser.get_year(), pUser.get_day_month());
+void User::print_user(User &user) {
+	printf("Name: %s, Year: %d, DayMonth: %.2lf\n", user.get_name().c_str(), user.get_year(), user.get_day_month());
 }

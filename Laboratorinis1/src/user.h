@@ -22,7 +22,7 @@ public:
 	void set_year(int year);
 	void set_day_month(double dayMonth);
 
-	static void print_user(User &pUser);
+	static void print_user(User &user);
 };
 
 #endif

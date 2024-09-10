@@ -16,18 +16,41 @@ void UsersMonitor::print_users() {
 	}
 }
 
-void UsersMonitor::add_user(User user) {
-	if (currentSize < maxSize) {
-		users[currentSize] = user;
-		currentSize++;
+void UsersMonitor::add_user(User userNew) {
+	if (currentSize >= maxSize) {
+		return;
 	}
+	users[currentSize] = userNew;
+	currentSize++;
 }
-/*void UsersMonitor::add_user_sorted(User user) {*/
-/*	// will implement later*/
-/*}*/
-/*User UsersMonitor::remove_user_last() {*/
-/*	// will implement later*/
-/*}*/
+
+void UsersMonitor::add_user_sorted(User userNew) {
+	if (currentSize == 0) {
+		add_user(userNew);
+	}
+	if (currentSize >= maxSize) {
+		return;
+	}
+
+	int i;
+	for (i = currentSize - 1; i >= 0; i--) {
+		if (users[i].get_year() < userNew.get_year()) {
+			break;
+		}
+		users[i + 1] = users[i];
+	}
+	users[i + 1] = userNew;
+	currentSize++;
+}
+
+User UsersMonitor::remove_user_last() {
+	if (currentSize <= 0) {
+		return User();
+	}
+	User userTemporary = users[--currentSize];
+	users[currentSize] = User();
+	return userTemporary;
+}
 
 void UsersMonitor::read_file(string filePath) {
 	FILE *pFile = fopen(filePath.c_str(), "r");
@@ -60,7 +83,7 @@ void UsersMonitor::read_file(string filePath) {
 				const int year = userCurrent["year"].GetInt();
 				const double dayMonth = userCurrent["dayMonth"].GetDouble();
 				User userToAdd = User(name, year, dayMonth);
-				add_user(userToAdd);
+				add_user_sorted(userToAdd);
 			}
 		}
 	}

@@ -13,8 +13,8 @@ public:
 	~UsersMonitor();
 
 	void print_users();
-	void add_user(User user);
-	void add_user_sorted(User user);
+	void add_user(User userNew);
+	void add_user_sorted(User userNew);
 	User remove_user_last();
 
 	void read_file(std::string filePath);
