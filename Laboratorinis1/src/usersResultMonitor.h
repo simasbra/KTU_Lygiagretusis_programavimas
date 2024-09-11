@@ -2,20 +2,26 @@
 #define USERS_RESULT_MONITOR
 
 #include "userResult.h"
+#include "usersMonitor.h"
 
 class UsersResultMonitor {
-public:
+private:
 	static const int maxSize = 1000;
 	int currentSize;
 	UserResult users[maxSize];
 
-	UsersResultMonitor();
+	UsersMonitor *usersMonitor;
+
+public:
+	UsersResultMonitor(UsersMonitor *usersMonitor);
 	~UsersResultMonitor();
 
 	void print_users();
-	void add_user(UserResult userResultNew);
+	void add_user_last(UserResult userResultNew);
 	void add_user_sorted(UserResult userResultNew);
 	UserResult remove_user_last();
+
+	User get_user_last_from_users_monitor();
 };
 
 #endif

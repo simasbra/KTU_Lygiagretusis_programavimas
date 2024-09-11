@@ -1,9 +1,10 @@
 #include "usersResultMonitor.h"
 #include "userResult.h"
+#include "usersMonitor.h"
 
 using namespace std;
 
-UsersResultMonitor::UsersResultMonitor() : currentSize(0) {}
+UsersResultMonitor::UsersResultMonitor(UsersMonitor *usersMonitor) : currentSize(0), usersMonitor(usersMonitor) {}
 
 UsersResultMonitor::~UsersResultMonitor() {}
 
@@ -13,7 +14,7 @@ void UsersResultMonitor::print_users() {
 	}
 }
 
-void UsersResultMonitor::add_user(UserResult userResultNew) {
+void UsersResultMonitor::add_user_last(UserResult userResultNew) {
 	if (currentSize >= maxSize) {
 		return;
 	}
@@ -24,7 +25,7 @@ void UsersResultMonitor::add_user(UserResult userResultNew) {
 
 void UsersResultMonitor::add_user_sorted(UserResult userResultNew) {
 	if (currentSize == 0) {
-		add_user(userResultNew);
+		add_user_last(userResultNew);
 	}
 	if (currentSize >= maxSize) {
 		return;
@@ -49,4 +50,12 @@ UserResult UsersResultMonitor::remove_user_last() {
 	UserResult userResultTemporary = users[--currentSize];
 	users[currentSize] = UserResult();
 	return userResultTemporary;
+}
+
+User UsersResultMonitor::get_user_last_from_users_monitor() {
+	if (usersMonitor->get_current_size() <= 0) {
+		return User();
+	}
+
+	return usersMonitor->remove_user_last();
 }

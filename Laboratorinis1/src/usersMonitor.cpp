@@ -16,7 +16,11 @@ void UsersMonitor::print_users() {
 	}
 }
 
-void UsersMonitor::add_user(User userNew) {
+int UsersMonitor::get_current_size() {
+	return currentSize;
+}
+
+void UsersMonitor::add_user_last(User userNew) {
 	if (currentSize >= maxSize) {
 		return;
 	}
@@ -27,7 +31,7 @@ void UsersMonitor::add_user(User userNew) {
 
 void UsersMonitor::add_user_sorted(User userNew) {
 	if (currentSize == 0) {
-		add_user(userNew);
+		add_user_last(userNew);
 	}
 	if (currentSize >= maxSize) {
 		return;
