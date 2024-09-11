@@ -19,6 +19,8 @@ public:
 
 	void set_user(User newUser);
 	void set_hash(std::string hash);
+	
+	std::string generate_sha256();
 
 	static void print_user_result(UserResult &userResult);
 };
