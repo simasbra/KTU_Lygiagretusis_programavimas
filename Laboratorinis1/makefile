@@ -16,5 +16,8 @@ LIBS = $(CRYPTOPP_LIB)
 $(TARGET): $(SRCS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET) $(SRCS) $(LIBS)
 
+dataGenerator: $(SRCDIR)dataGenerator.cpp
+	$(CC) $(CCXFLAGS) -o dataGenerator $(SRCDIR)dataGenerator.cpp
+
 clean:
 	rm -f $(TARGET)
