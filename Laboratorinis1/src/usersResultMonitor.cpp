@@ -4,52 +4,60 @@
 
 using namespace std;
 
-UsersResultMonitor::UsersResultMonitor(UsersMonitor *usersMonitor) : currentSize(0), usersMonitor(usersMonitor) {}
+UsersResultMonitor::UsersResultMonitor(UsersMonitor *pUsersMonitor) : currentSize_(0), usersMonitor(pUsersMonitor) {}
 
 UsersResultMonitor::~UsersResultMonitor() {}
 
 void UsersResultMonitor::print_users() {
-	for (int i = 0; i < currentSize; i++) {
-		UserResult::print_user_result(users[i]);
+	for (int i = 0; i < currentSize_; i++) {
+		UserResult::print_user_result(usersResult_[i]);
 	}
 }
 
-void UsersResultMonitor::add_user_last(UserResult userResultNew) {
-	if (currentSize >= maxSize) {
+void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
+	if (currentSize_ >= MAX_SIZE_) {
 		return;
 	}
 
-	users[currentSize] = userResultNew;
-	currentSize++;
+	usersResult_[currentSize_] = userResultNew;
+	currentSize_++;
 }
 
-void UsersResultMonitor::add_user_sorted(UserResult userResultNew) {
-	if (currentSize == 0) {
-		add_user_last(userResultNew);
+void UsersResultMonitor::add_user_result_sorted(UserResult userResultNew) {
+	if (currentSize_ == 0) {
+		add_user_result_last(userResultNew);
 	}
-	if (currentSize >= maxSize) {
+	if (currentSize_ >= MAX_SIZE_) {
 		return;
 	}
 
 	int i;
-	for (i = currentSize - 1; i >= 0; i--) {
-		if (users[i].get_hash() < userResultNew.get_hash()) {
+	for (i = currentSize_ - 1; i >= 0; i--) {
+		if (usersResult_[i].get_hash() < userResultNew.get_hash()) {
 			break;
 		}
-		users[i + 1] = users[i];
+		usersResult_[i + 1] = usersResult_[i];
 	}
-	users[i + 1] = userResultNew;
-	currentSize++;
+	usersResult_[i + 1] = userResultNew;
+	currentSize_++;
 }
 
-UserResult UsersResultMonitor::remove_user_last() {
-	if (currentSize <= 0) {
+UserResult UsersResultMonitor::remove_user_result_last() {
+	if (currentSize_ <= 0) {
 		return UserResult();
 	}
 
-	UserResult userResultTemporary = users[--currentSize];
-	users[currentSize] = UserResult();
+	UserResult userResultTemporary = usersResult_[--currentSize_];
+	usersResult_[currentSize_] = UserResult();
 	return userResultTemporary;
+}
+
+UserResult UsersResultMonitor::get_user_result_last() {
+	if (currentSize_ <= 0) {
+		return UserResult();
+	}
+
+	return usersResult_[currentSize_ - 1];
 }
 
 User UsersResultMonitor::get_user_last_from_users_monitor() {

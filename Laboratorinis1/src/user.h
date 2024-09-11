@@ -5,9 +5,9 @@
 
 class User {
 private:
-	std::string name;
-	int year;
-	double dayMonth;
+	std::string name_;
+	int year_;
+	double dayMonth_;
 
 public:
 	User();

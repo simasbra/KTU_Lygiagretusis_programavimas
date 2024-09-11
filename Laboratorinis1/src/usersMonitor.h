@@ -5,9 +5,9 @@
 
 class UsersMonitor {
 private:
-	static const int maxSize = 100;
-	int currentSize;
-	User users[maxSize];
+	static const int MAX_SIZE_ = 100;
+	int currentSize_;
+	User users_[MAX_SIZE_];
 
 public:
 	UsersMonitor();

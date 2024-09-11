@@ -7,31 +7,32 @@
 
 using namespace std;
 
-UserResult::UserResult() : user(User()), hash("") {}
+UserResult::UserResult() : user_(User()), hash_("") {}
 
-UserResult::UserResult(User user, string hash) : user(user), hash(hash) {}
+UserResult::UserResult(User user, string hash) : user_(user), hash_(hash) {}
 
 UserResult::~UserResult() {}
 
 User UserResult::get_user() {
-	return user;
+	return user_;
 }
 
 string UserResult::get_hash() {
-	return hash;
+	return hash_;
 }
 
 void UserResult::set_user(User newUser) {
-	user = newUser;
+	user_ = newUser;
 }
 
 void UserResult::set_hash(string hash) {
-	UserResult::hash = hash;
+	UserResult::hash_ = hash;
 }
 
 void UserResult::print_user_result(UserResult &userResult) {
+	User user = userResult.get_user();
 	printf("Name: %s, Year: %d, DayMonth: %.2lf, Hash: %s\n",
-		userResult.user.get_name().c_str(), userResult.user.get_year(), userResult.user.get_day_month(), userResult.get_hash().c_str());
+		user.get_name().c_str(), user.get_year(), user.get_day_month(), userResult.get_hash().c_str());
 }
 
 string UserResult::generate_sha256() {

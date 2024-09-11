@@ -6,8 +6,8 @@
 
 class UserResult {
 private:
-	User user;
-	std::string hash;
+	User user_;
+	std::string hash_;
 
 public:
 	UserResult();
