@@ -1,9 +1,8 @@
 #include <cstdio>
-#include <string>
-#include "rapidjson/document.h"
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
+#include "../rapidjson/document.h"
+#include "../rapidjson/rapidjson.h"
+#include "../rapidjson/prettywriter.h"
+#include "../rapidjson/stringbuffer.h"
 
 using namespace rapidjson;
 
@@ -39,17 +38,17 @@ int main(void) {
 }
 
 void fill_array(Value &usersArray, Document::AllocatorType &allocator) {
-    for (int i = 0; i < arraySize; i++) {
-        Value userObject(kObjectType);
+	for (int i = 0; i < arraySize; i++) {
+		Value userObject(kObjectType);
 
-        int year = 1990 + i % 30;
-        double dayMonth = (1 + i % 31) + ((1 + i % 12) / 100.0);
+		int year = 1990 + i % 30;
+		double dayMonth = (1 + i % 31) + ((1 + i % 12) / 100.0);
 
-        Value name(names[i % (sizeof(names) / sizeof(names[0]))], allocator);
-        userObject.AddMember("name", name, allocator);
-        userObject.AddMember("year", year, allocator);
-        userObject.AddMember("dayMonth", dayMonth, allocator);
+		Value name(names[i % (sizeof(names) / sizeof(names[0]))], allocator);
+		userObject.AddMember("name", name, allocator);
+		userObject.AddMember("year", year, allocator);
+		userObject.AddMember("dayMonth", dayMonth, allocator);
 
-        usersArray.PushBack(userObject, allocator);
-    }
+		usersArray.PushBack(userObject, allocator);
+	}
 }
