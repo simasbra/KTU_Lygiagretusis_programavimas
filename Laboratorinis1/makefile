@@ -4,14 +4,14 @@ CCXFLAGS = -Wall -Wextra -Werror
 SRCDIR = ./src/
 SRCS = $(SRCDIR)main.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
 
-TARGET = users
-
 RAPIDJSON_DIR = $(SRCDIR)rapidjson
 CRYPTOPP_DIR = $(SRCDIR)cryptopp
 INCLUDES = -I$(RAPIDJSON_DIR) -I$(CRYPTOPP_DIR)
 
 CRYPTOPP_LIB = $(CRYPTOPP_DIR)/libcryptopp.a
 LIBS = $(CRYPTOPP_LIB)
+
+TARGET = users
 
 $(TARGET): $(SRCS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET) $(SRCS) $(LIBS)

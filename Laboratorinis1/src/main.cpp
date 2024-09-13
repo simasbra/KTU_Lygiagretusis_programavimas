@@ -4,19 +4,19 @@
 
 using namespace std;
 
+const int USER_COUNT_1 = 100;
 const string filePathData1 = "data/IFF22_BradaitisV_L1_dat_1.json";
 const string filePathResult1 = "results/IFF22_BradaitisV_L1_rez.txt";
+const int MAX_THREAD_COUNT = USER_COUNT_1 / 4;
 
 int main(void) {
 	UsersMonitor *pUsersMonitor = new UsersMonitor();
 	UsersResultMonitor *pUsersResultMonitor = new UsersResultMonitor(pUsersMonitor);
 
+	int usersRead = 0;
 	pUsersMonitor->read_file(filePathData1);
-	printf("\nUser Result Monitor: \n");
-	pUsersMonitor->print_users();
-	printf("\n%d\n", pUsersMonitor->get_current_size());
 
-	while (pUsersMonitor->get_current_size() >0) {
+	while (pUsersMonitor->get_current_size() > 0) {
 		pUsersResultMonitor->steal_generate_set_check_add_user_result();
 	}
 
