@@ -58,7 +58,7 @@ User UsersMonitor::remove_user_last() {
 	return userTemporary;
 }
 
-void UsersMonitor::read_file(string filePath) {
+void UsersMonitor::read_file(const string &filePath) {
 	FILE *pFile = fopen(filePath.c_str(), "r");
 	if (pFile == NULL) {
 		perror("Failed to open a file\n");

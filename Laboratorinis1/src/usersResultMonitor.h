@@ -3,10 +3,11 @@
 
 #include "userResult.h"
 #include "usersMonitor.h"
+#include <string>
 
 class UsersResultMonitor {
 private:
-	static const int MAX_SIZE_ = 1000;
+	static const int MAX_SIZE_ = 100;
 	int currentSize_;
 	UserResult usersResult_[MAX_SIZE_];
 
@@ -16,13 +17,16 @@ public:
 	UsersResultMonitor(UsersMonitor *usersMonitor);
 	~UsersResultMonitor();
 
-	void print_users();
+	int get_current_size();
 	void add_user_result_last(UserResult userResultNew);
 	void add_user_result_sorted(UserResult userResultNew);
 	UserResult remove_user_result_last();
 	UserResult get_user_result_last();
-
 	User get_user_last_from_users_monitor();
+
+	void steal_generate_set_check_add_user_result();
+	void print_users_result();
+	void print_users_result_to_file(const std::string &filePath);
 };
 
 #endif

@@ -3,11 +3,14 @@
 #include "cryptopp/sha.h"
 #include "cryptopp/hex.h"
 #include "cryptopp/filters.h"
+#include "user.h"
 #include "userResult.h"
 
 using namespace std;
 
 UserResult::UserResult() : user_(User()), hash_("") {}
+
+UserResult::UserResult(User user) : user_(user), hash_("") {}
 
 UserResult::UserResult(User user, string hash) : user_(user), hash_(hash) {}
 
@@ -29,12 +32,6 @@ void UserResult::set_hash(string hash) {
 	UserResult::hash_ = hash;
 }
 
-void UserResult::print_user_result(UserResult &userResult) {
-	User user = userResult.get_user();
-	printf("Name: %s, Year: %d, DayMonth: %.2lf, Hash: %s\n",
-		user.get_name().c_str(), user.get_year(), user.get_day_month(), userResult.get_hash().c_str());
-}
-
 string UserResult::generate_sha256() {
 	User user = UserResult::get_user();
 	stringstream stream;
@@ -52,4 +49,18 @@ string UserResult::generate_sha256() {
 	encoder.MessageEnd();
 
 	return hashOutput;
+}
+
+bool UserResult::check_hash_ends_with_a_number() {
+	char lastCharacter = hash_.back();
+	if (isdigit(lastCharacter)) {
+		return true;
+	}
+	return false;
+}
+
+void UserResult::print_user_result(UserResult &userResult) {
+	User user = userResult.get_user();
+	printf("Name: %s, Year: %d, DayMonth: %.2lf, Hash: %s\n",
+		user.get_name().c_str(), user.get_year(), user.get_day_month(), userResult.get_hash().c_str());
 }

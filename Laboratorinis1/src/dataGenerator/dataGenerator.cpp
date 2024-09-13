@@ -6,13 +6,15 @@
 
 using namespace rapidjson;
 
+const char filePath1[] = "./data/IFF22_BradaitisV_L1_dat_1.json";
+
 const int arraySize = 100;
 const char *names[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys" };
 
 void fill_array(Value &usersArray, Document::AllocatorType &allocator);
 
 int main(void) {
-	FILE *pFile = fopen("./data/Simas_BradaitisV_L1_dat_1.json", "w");
+	FILE *pFile = fopen(filePath1, "w");
 	if (pFile == NULL) {
 		printf("Error opening the file");
 		return 1;
@@ -25,6 +27,7 @@ int main(void) {
 	Value usersArray(kArrayType);
 	fill_array(usersArray, allocator);
 	document.AddMember("users", usersArray, allocator);
+	document.AddMember("usersCount", arraySize, allocator);
 	
 	// converting document to json
 	StringBuffer buffer;

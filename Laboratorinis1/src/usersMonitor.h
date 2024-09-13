@@ -19,7 +19,7 @@ public:
 	void add_user_sorted(User userNew);
 	User remove_user_last();
 
-	void read_file(std::string filePath);
+	void read_file(const std::string &filePath);
 };
 
 #endif
