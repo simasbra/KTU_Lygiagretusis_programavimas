@@ -1,0 +1,55 @@
+{
+    "users": [
+        {
+            "name": "Jonas",
+            "year": 1990,
+            "dayMonth": 1.01
+        },
+        {
+            "name": "Petras",
+            "year": 1991,
+            "dayMonth": 2.02
+        },
+        {
+            "name": "Antanas",
+            "year": 1992,
+            "dayMonth": 3.03
+        },
+        {
+            "name": "Juozas",
+            "year": 1993,
+            "dayMonth": 4.04
+        },
+        {
+            "name": "Stasys",
+            "year": 1994,
+            "dayMonth": 5.05
+        },
+        {
+            "name": "Jonas",
+            "year": 1995,
+            "dayMonth": 6.06
+        },
+        {
+            "name": "Petras",
+            "year": 1996,
+            "dayMonth": 7.07
+        },
+        {
+            "name": "Antanas",
+            "year": 1997,
+            "dayMonth": 8.08
+        },
+        {
+            "name": "Juozas",
+            "year": 1998,
+            "dayMonth": 9.09
+        },
+        {
+            "name": "Stasys",
+            "year": 1999,
+            "dayMonth": 10.1
+        }
+    ],
+    "usersCount": 10
+}

@@ -20,4 +20,4 @@ dataGenerator: $(SRCDIR)dataGenerator/dataGenerator.cpp
 	$(CC) $(CCXFLAGS) -o dataGenerator $(SRCDIR)dataGenerator/dataGenerator.cpp
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) dataGenerator

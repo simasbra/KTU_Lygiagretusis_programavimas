@@ -22,6 +22,8 @@ public:
 	void set_year(int year);
 	void set_day_month(double dayMonth);
 
+	bool isValid();
+
 	static void print_user(User &user);
 };
 

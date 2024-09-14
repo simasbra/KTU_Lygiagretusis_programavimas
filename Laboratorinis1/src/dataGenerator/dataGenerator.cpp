@@ -6,15 +6,15 @@
 
 using namespace rapidjson;
 
-const char filePath1[] = "./data/IFF22_BradaitisV_L1_dat_1.json";
+const char filePath[] = "./data/IFF22_BradaitisV_L1_dat_1.json";
 
 const int arraySize = 100;
-const char *names[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys" };
+const char *names[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys", "Ruta", "Rugile", "Greta", "Anastasija", "Ona" };
 
 void fill_array(Value &usersArray, Document::AllocatorType &allocator);
 
 int main(void) {
-	FILE *pFile = fopen(filePath1, "w");
+	FILE *pFile = fopen(filePath, "w");
 	if (pFile == NULL) {
 		printf("Error opening the file");
 		return 1;

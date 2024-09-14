@@ -13,6 +13,10 @@ int UsersResultMonitor::get_current_size() {
 	return currentSize_;
 }
 
+int UsersResultMonitor::get_users_processed() {
+	return usersProcessed_;
+}
+
 void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
 	if (currentSize_ >= MAX_SIZE_) {
 		return;
@@ -25,6 +29,7 @@ void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
 void UsersResultMonitor::add_user_result_sorted(UserResult userResultNew) {
 	if (currentSize_ == 0) {
 		add_user_result_last(userResultNew);
+		return;
 	}
 	if (currentSize_ >= MAX_SIZE_) {
 		return;
@@ -69,17 +74,23 @@ User UsersResultMonitor::get_user_last_from_users_monitor() {
 
 void UsersResultMonitor::steal_generate_set_check_add_user_result() {
 	User userTemporary = get_user_last_from_users_monitor();
+	if (!userTemporary.isValid()) {
+		return;
+	}
+
 	UserResult *pUserResultTemporary = new UserResult(userTemporary);
 	pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
 
 	if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 		add_user_result_sorted(*pUserResultTemporary);
 	}
+	usersProcessed_++;
 	delete pUserResultTemporary;
 }
 
 void UsersResultMonitor::print_users_result() {
 	for (int i = 0; i < currentSize_; i++) {
+		printf("%-4d ", i + 1);
 		UserResult::print_user_result(usersResult_[i]);
 	}
 }

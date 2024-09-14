@@ -7,9 +7,10 @@
 
 class UsersResultMonitor {
 private:
-	static const int MAX_SIZE_ = 100;
-	int currentSize_;
+	static const int MAX_SIZE_ = 500;
 	UserResult usersResult_[MAX_SIZE_];
+	int currentSize_;
+	int usersProcessed_;
 
 	UsersMonitor *usersMonitor;
 
@@ -18,6 +19,7 @@ public:
 	~UsersResultMonitor();
 
 	int get_current_size();
+	int get_users_processed();
 	void add_user_result_last(UserResult userResultNew);
 	void add_user_result_sorted(UserResult userResultNew);
 	UserResult remove_user_result_last();

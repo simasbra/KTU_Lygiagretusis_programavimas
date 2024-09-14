@@ -22,17 +22,24 @@ double User::get_day_month() {
 }
 
 void User::set_name(string name) {
-	this->name_ = name;
+	name_ = name;
 }
 
 void User::set_year(int year) {
-	this->year_ = year;
+	year_ = year;
 }
 
 void User::set_day_month(double dayMonth) {
-	this->dayMonth_ = dayMonth;
+	dayMonth_ = dayMonth;
+}
+
+bool User::isValid() {
+	if (!name_.empty() && year_ > 0 && dayMonth_ > 0) {
+		return true;
+	}
+	return false;
 }
 
 void User::print_user(User &user) {
-	printf("Name: %s, Year: %d, DayMonth: %.2lf\n", user.get_name().c_str(), user.get_year(), user.get_day_month());
+	printf("Name: %-20s Year: %10d DayMonth: %10.2lf\n", user.get_name().c_str(), user.get_year(), user.get_day_month());
 }
