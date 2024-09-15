@@ -5,7 +5,7 @@
 
 using namespace std;
 
-UsersResultMonitor::UsersResultMonitor(UsersMonitor *pUsersMonitor) : currentSize_(0), usersMonitor(pUsersMonitor) {}
+UsersResultMonitor::UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor) : currentSize_(0), usersToBeAdded_(usersToBeAdded), pUsersMonitor_(pUsersMonitor) {}
 
 UsersResultMonitor::~UsersResultMonitor() {}
 
@@ -15,6 +15,18 @@ int UsersResultMonitor::get_current_size() {
 
 int UsersResultMonitor::get_users_processed() {
 	return usersProcessed_;
+}
+
+int UsersResultMonitor::get_users_to_be_added() {
+	return usersToBeAdded_;
+}
+
+UsersMonitor * UsersResultMonitor::get_user_monitor_pointer() {
+	return pUsersMonitor_;
+}
+
+void UsersResultMonitor::increase_users_processed() {
+	usersProcessed_++;
 }
 
 void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
@@ -27,11 +39,11 @@ void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
 }
 
 void UsersResultMonitor::add_user_result_sorted(UserResult userResultNew) {
-	if (currentSize_ == 0) {
-		add_user_result_last(userResultNew);
+	if (currentSize_ >= MAX_SIZE_) {
 		return;
 	}
-	if (currentSize_ >= MAX_SIZE_) {
+	if (currentSize_ == 0) {
+		add_user_result_last(userResultNew);
 		return;
 	}
 
@@ -64,28 +76,24 @@ UserResult UsersResultMonitor::get_user_result_last() {
 	return usersResult_[currentSize_ - 1];
 }
 
+bool UsersResultMonitor::check_all_users_added() {
+	return pUsersMonitor_->get_users_added() == usersToBeAdded_;
+}
+
+bool UsersResultMonitor::check_all_users_processed() {
+	return currentSize_ == usersToBeAdded_;
+}
+
 User UsersResultMonitor::get_user_last_from_users_monitor() {
-	if (usersMonitor->get_current_size() <= 0) {
+	if (pUsersMonitor_->get_current_size() <= 0) {
 		return User();
 	}
 
-	return usersMonitor->remove_user_last();
+	return pUsersMonitor_->remove_user_last();
 }
 
-void UsersResultMonitor::steal_generate_set_check_add_user_result() {
-	User userTemporary = get_user_last_from_users_monitor();
-	if (!userTemporary.isValid()) {
-		return;
-	}
-
-	UserResult *pUserResultTemporary = new UserResult(userTemporary);
-	pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
-
-	if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
-		add_user_result_sorted(*pUserResultTemporary);
-	}
-	usersProcessed_++;
-	delete pUserResultTemporary;
+int UsersResultMonitor::get_users_monitor_current_size() {
+	return pUsersMonitor_->get_current_size();
 }
 
 void UsersResultMonitor::print_users_result() {

@@ -33,7 +33,7 @@ void User::set_day_month(double dayMonth) {
 	dayMonth_ = dayMonth;
 }
 
-bool User::isValid() {
+bool User::is_valid() {
 	if (!name_.empty() && year_ > 0 && dayMonth_ > 0) {
 		return true;
 	}

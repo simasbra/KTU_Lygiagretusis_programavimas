@@ -11,22 +11,29 @@ private:
 	UserResult usersResult_[MAX_SIZE_];
 	int currentSize_;
 	int usersProcessed_;
+	int usersToBeAdded_;
 
-	UsersMonitor *usersMonitor;
+	UsersMonitor *pUsersMonitor_;
 
 public:
-	UsersResultMonitor(UsersMonitor *usersMonitor);
+	UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor);
 	~UsersResultMonitor();
 
 	int get_current_size();
 	int get_users_processed();
+	int get_users_to_be_added();
+	UsersMonitor *get_user_monitor_pointer();
+	void increase_users_processed();
 	void add_user_result_last(UserResult userResultNew);
 	void add_user_result_sorted(UserResult userResultNew);
 	UserResult remove_user_result_last();
 	UserResult get_user_result_last();
-	User get_user_last_from_users_monitor();
+	bool check_all_users_added();
+	bool check_all_users_processed();
 
-	void steal_generate_set_check_add_user_result();
+	User get_user_last_from_users_monitor();
+	int get_users_monitor_current_size();
+
 	void print_users_result();
 	void print_users_result_to_file(const std::string &filePath);
 };

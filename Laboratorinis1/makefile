@@ -9,7 +9,7 @@ CRYPTOPP_DIR = $(SRCDIR)cryptopp
 INCLUDES = -I$(RAPIDJSON_DIR) -I$(CRYPTOPP_DIR)
 
 CRYPTOPP_LIB = $(CRYPTOPP_DIR)/libcryptopp.a
-LIBS = $(CRYPTOPP_LIB)
+LIBS = $(CRYPTOPP_LIB) -lpthread
 
 TARGET = users
 
