@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
+#include "userResult.h"
 #include "usersMonitor.h"
 #include "usersResultMonitor.h"
 
@@ -65,7 +66,7 @@ int main(void) {
 		}
 	}
 
-	print_monitors_statistics(pUsersMonitor, pUsersResultMonitor);
+	/*print_monitors_statistics(pUsersMonitor, pUsersResultMonitor);*/
 	pUsersResultMonitor->print_users_result_to_file(filePathResult);
 
 	delete pUsersMonitor;
@@ -128,25 +129,23 @@ void *create_thread(void *arg) {
 
 	while (!pUsersResultMonitor->check_all_users_processed()) {
 		pthread_mutex_lock(&mutex);
-		if (!pUsersResultMonitor->check_all_users_added()) {
-			pthread_cond_wait(&newUserAdded, &mutex);
-		}
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
 		pthread_mutex_unlock(&mutex);
 		if (!userTemporary.is_valid()) {
-			return NULL;
+			continue;
 		}
 
 		UserResult *pUserResultTemporary = new UserResult(userTemporary);
 		pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
 
 		pthread_mutex_lock(&mutex);
-		/*if (!pUserResultTemporary->check_hash_ends_with_a_number()) {*/
-		pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);
-		/*}*/
+		if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
+			pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);
+		}
 		pUsersResultMonitor->increase_users_processed();
 		pthread_mutex_unlock(&mutex);
 
+		UserResult::print_user_result(*pUserResultTemporary);
 		delete pUserResultTemporary;
 	}
 	return NULL;

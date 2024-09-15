@@ -81,7 +81,7 @@ bool UsersResultMonitor::check_all_users_added() {
 }
 
 bool UsersResultMonitor::check_all_users_processed() {
-	return currentSize_ == usersToBeAdded_;
+	return usersProcessed_ == usersToBeAdded_;
 }
 
 User UsersResultMonitor::get_user_last_from_users_monitor() {
