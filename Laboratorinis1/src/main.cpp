@@ -17,7 +17,6 @@ pthread_cond_t newUserAdded;
 void read_file(const string &filePath, rapidjson::Document *pDocument);
 User get_user_from_value(rapidjson::Value &userValue);
 void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *pUsersResultMonitor);
-int initialize_mutex_and_cond();
 void *create_thread(void *arg);
 
 int main(void) {
@@ -31,7 +30,8 @@ int main(void) {
 	const int USER_COUNT = usersArray.Size();
 	const int MAX_THREAD_COUNT = USER_COUNT / 4;
 	pthread_t threads[MAX_THREAD_COUNT];
-	if (int error = initialize_mutex_and_cond() != 0) {
+	if (int error = pthread_mutex_init(&mutex, NULL) != 0) {
+		printf("Thread cannot be created: [%s]", strerror(error));
 		return error;
 	}
 
@@ -51,7 +51,7 @@ int main(void) {
 			User userToAdd = get_user_from_value(usersArray[i]);
 			pthread_mutex_lock(&mutex);
 			pUsersMonitor->add_user_last(userToAdd);
-			pthread_cond_signal(&newUserAdded);
+			pthread_cond_broadcast(&newUserAdded);
 			pthread_mutex_unlock(&mutex);
 			i++;
 		}
@@ -66,7 +66,7 @@ int main(void) {
 		}
 	}
 
-	/*print_monitors_statistics(pUsersMonitor, pUsersResultMonitor);*/
+	print_monitors_statistics(pUsersMonitor, pUsersResultMonitor);
 	pUsersResultMonitor->print_users_result_to_file(filePathResult);
 
 	delete pUsersMonitor;
@@ -109,19 +109,6 @@ void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *
 	printf("\nUser Result Monitor: \n");
 	pUsersResultMonitor->print_users_result();
 	printf("User Result Monitor count: %d\n", pUsersResultMonitor->get_current_size());
-}
-
-int initialize_mutex_and_cond() {
-	int error = 0;
-	if ((error = pthread_mutex_init(&mutex, NULL)) != 0) {
-		printf("Thread cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	if ((error = pthread_cond_init(&newUserAdded, NULL)) != 0) {
-		printf("Thread cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	return 0;
 }
 
 void *create_thread(void *arg) {
