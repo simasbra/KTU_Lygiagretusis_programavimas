@@ -8,7 +8,7 @@ UsersMonitor::UsersMonitor() : currentSize_(0) {}
 UsersMonitor::~UsersMonitor() {}
 
 void UsersMonitor::print_users() {
-	for (int i = 0; i < currentSize_; i++) {
+	for (unsigned int i = 0; i < currentSize_; i++) {
 		printf("%4d ", i + 1);
 		User::print_user(users_[i]);
 	}
@@ -18,16 +18,16 @@ int UsersMonitor::get_max_size() {
 	return MAX_SIZE_;
 }
 
-int UsersMonitor::get_current_size() {
+unsigned int UsersMonitor::get_current_size() {
 	return currentSize_;
 }
 
-int UsersMonitor::get_users_added() {
+unsigned int UsersMonitor::get_users_added() {
 	return usersAdded_;
 }
 
 void UsersMonitor::add_user_last(User userNew) {
-	if (currentSize_ >= MAX_SIZE_) {
+	if (currentSize_ == MAX_SIZE_) {
 		return;
 	}
 
@@ -41,7 +41,7 @@ void UsersMonitor::add_user_sorted(User userNew) {
 		add_user_last(userNew);
 		return;
 	}
-	if (currentSize_ >= MAX_SIZE_) {
+	if (currentSize_ == MAX_SIZE_) {
 		return;
 	}
 
@@ -58,11 +58,15 @@ void UsersMonitor::add_user_sorted(User userNew) {
 }
 
 User UsersMonitor::remove_user_last() {
-	if (currentSize_ <= 0) {
+	if (currentSize_ == 0) {
 		return User();
 	}
 
 	User userTemporary = users_[--currentSize_];
 	users_[currentSize_] = User();
 	return userTemporary;
+}
+
+bool UsersMonitor::check_is_space_available() {
+	return currentSize_ < MAX_SIZE_;
 }

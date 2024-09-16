@@ -9,15 +9,15 @@ UsersResultMonitor::UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersM
 
 UsersResultMonitor::~UsersResultMonitor() {}
 
-int UsersResultMonitor::get_current_size() {
+unsigned int UsersResultMonitor::get_current_size() {
 	return currentSize_;
 }
 
-int UsersResultMonitor::get_users_processed() {
+unsigned int UsersResultMonitor::get_users_processed() {
 	return usersProcessed_;
 }
 
-int UsersResultMonitor::get_users_to_be_added() {
+unsigned int UsersResultMonitor::get_users_to_be_added() {
 	return usersToBeAdded_;
 }
 
@@ -30,7 +30,7 @@ void UsersResultMonitor::increase_users_processed() {
 }
 
 void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
-	if (currentSize_ >= MAX_SIZE_) {
+	if (currentSize_ == MAX_SIZE_) {
 		return;
 	}
 
@@ -39,7 +39,7 @@ void UsersResultMonitor::add_user_result_last(UserResult userResultNew) {
 }
 
 void UsersResultMonitor::add_user_result_sorted(UserResult userResultNew) {
-	if (currentSize_ >= MAX_SIZE_) {
+	if (currentSize_ == MAX_SIZE_) {
 		return;
 	}
 	if (currentSize_ == 0) {
@@ -92,12 +92,12 @@ User UsersResultMonitor::get_user_last_from_users_monitor() {
 	return pUsersMonitor_->remove_user_last();
 }
 
-int UsersResultMonitor::get_users_monitor_current_size() {
+unsigned int UsersResultMonitor::get_users_monitor_current_size() {
 	return pUsersMonitor_->get_current_size();
 }
 
 void UsersResultMonitor::print_users_result() {
-	for (int i = 0; i < currentSize_; i++) {
+	for (unsigned int i = 0; i < currentSize_; i++) {
 		printf("%-4d ", i + 1);
 		UserResult::print_user_result(usersResult_[i]);
 	}
@@ -114,7 +114,7 @@ void UsersResultMonitor::print_users_result_to_file(const string &filePath) {
 	fprintf(pFile, "| %-20s | %-10s | %-10s | %-64s |\n", "Name", "Year", "Day Month", "SHA256 hash");
 	fprintf(pFile, "%s\n", dashes.c_str());
 
-	for (int i = 0; i < currentSize_; i++) {
+	for (unsigned int i = 0; i < currentSize_; i++) {
 		User user = usersResult_[i].get_user();
 		fprintf(pFile, "| %-20s | %10d | %10.2lf | %-64s |\n",
 			user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_hash().c_str());

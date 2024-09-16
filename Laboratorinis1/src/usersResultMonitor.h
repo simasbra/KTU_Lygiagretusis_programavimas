@@ -9,9 +9,9 @@ class UsersResultMonitor {
 private:
 	static const int MAX_SIZE_ = 500;
 	UserResult usersResult_[MAX_SIZE_];
-	int currentSize_;
-	int usersProcessed_;
-	int usersToBeAdded_;
+	unsigned int currentSize_;
+	unsigned int usersProcessed_;
+	unsigned int usersToBeAdded_;
 
 	UsersMonitor *pUsersMonitor_;
 
@@ -19,9 +19,9 @@ public:
 	UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor);
 	~UsersResultMonitor();
 
-	int get_current_size();
-	int get_users_processed();
-	int get_users_to_be_added();
+	unsigned int get_current_size();
+	unsigned int get_users_processed();
+	unsigned int get_users_to_be_added();
 	UsersMonitor *get_user_monitor_pointer();
 	void increase_users_processed();
 	void add_user_result_last(UserResult userResultNew);
@@ -32,7 +32,7 @@ public:
 	bool check_all_users_processed();
 
 	User get_user_last_from_users_monitor();
-	int get_users_monitor_current_size();
+	unsigned int get_users_monitor_current_size();
 
 	void print_users_result();
 	void print_users_result_to_file(const std::string &filePath);
