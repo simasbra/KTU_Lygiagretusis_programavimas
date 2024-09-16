@@ -113,7 +113,6 @@ void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *
 
 void *create_thread(void *arg) {
 	UsersResultMonitor *pUsersResultMonitor = (UsersResultMonitor *) arg;
-
 	while (!pUsersResultMonitor->check_all_users_processed()) {
 		pthread_mutex_lock(&mutex);
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
@@ -121,7 +120,6 @@ void *create_thread(void *arg) {
 		if (!userTemporary.is_valid()) {
 			continue;
 		}
-
 		UserResult *pUserResultTemporary = new UserResult(userTemporary);
 		pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
 
