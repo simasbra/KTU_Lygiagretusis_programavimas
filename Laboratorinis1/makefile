@@ -17,7 +17,7 @@ $(TARGET): $(SRCS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET) $(SRCS) $(LIBS)
 
 dataGenerator: $(SRCDIR)dataGenerator/dataGenerator.cpp
-	$(CC) $(CCXFLAGS) -o dataGenerator $(SRCDIR)dataGenerator/dataGenerator.cpp
+	$(CC) $(CCXFLAGS) $(INCLUDES) -o dataGenerator $(SRCDIR)dataGenerator/dataGenerator.cpp $(LIBS)
 
 clean:
 	rm -f $(TARGET) dataGenerator

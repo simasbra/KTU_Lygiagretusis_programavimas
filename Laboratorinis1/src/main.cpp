@@ -1,4 +1,5 @@
 #include <cstring>
+#include <ctime>
 #include <pthread.h>
 #include <thread>
 #include "rapidjson/document.h"
@@ -9,8 +10,8 @@
 
 using namespace std;
 
-const string filePathData = "data/IFF22_BradaitisV_L1_dat_1.json";
-const string filePathResult = "results/IFF22_BradaitisV_L1_rez.txt";
+const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_1.json";
+const string FILE_PATH_RESULT = "results/IFF22_BradaitisV_L1_rez.txt";
 
 pthread_mutex_t mutexInput;
 pthread_mutex_t mutexOutput;
@@ -25,12 +26,13 @@ void *create_thread(void *arg);
 
 int main(void) {
 	rapidjson::Document jsonDocument;
-	read_file(filePathData, &jsonDocument);
+	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		usersArray = jsonDocument["users"];
 	}
 
+	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
 	const int MAX_THREAD_COUNT = min(USER_COUNT / 4, thread::hardware_concurrency());
 	pthread_t threads[MAX_THREAD_COUNT];
@@ -72,8 +74,11 @@ int main(void) {
 		}
 	}
 
+	clock_t clockEnd = clock();
+	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
 	print_monitors_statistics(pUsersMonitor, pUsersResultMonitor);
-	pUsersResultMonitor->print_users_result_to_file(filePathResult);
+	pUsersResultMonitor->print_users_result_to_file(FILE_PATH_RESULT);
+	printf("Time spent: %lfs\n", timeSpent);
 
 	delete pUsersMonitor;
 	delete pUsersResultMonitor;
