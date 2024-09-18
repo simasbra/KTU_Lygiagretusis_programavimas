@@ -10,34 +10,30 @@
 
 using namespace std;
 
-const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_1.json";
+const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_2.json";
 const string FILE_PATH_RESULT = "results/IFF22_BradaitisV_L1_rez.txt";
-
-pthread_mutex_t mutexInput;
-pthread_mutex_t mutexOutput;
-pthread_cond_t signalUserAdded;
-pthread_cond_t signalUserRemoved;
 
 void read_file(const string &filePath, rapidjson::Document *pDocument);
 User get_user_from_value(rapidjson::Value &userValue);
 void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *pUsersResultMonitor);
-int initialize_mutex_and_cond();
 void *create_thread(void *arg);
 
 int main(void) {
+	clock_t clockBegin = clock();
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
-	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
-		usersArray = jsonDocument["users"];
-	}
 
-	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
 	const int MAX_THREAD_COUNT = min(USER_COUNT / 4, thread::hardware_concurrency());
 	pthread_t threads[MAX_THREAD_COUNT];
-	if (int error = initialize_mutex_and_cond() != 0) {
-		return error;
+
+	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
+		usersArray = jsonDocument["users"];
+		for(int i = 0; i < USER_COUNT; i++) {
+			User userTemporary = User::get_user_from_value(usersArray[i]);
+			userTemporary.print_user();
+		}
 	}
 
 	UsersMonitor *pUsersMonitor = new UsersMonitor();
@@ -52,20 +48,10 @@ int main(void) {
 
 	int i = 0;
 	while (pUsersMonitor->get_users_added() < USER_COUNT) {
-		if (pUsersMonitor->get_users_added() < USER_COUNT) {
-			User userToAdd = get_user_from_value(usersArray[i]);
-			pthread_mutex_lock(&mutexInput);
-			while (!pUsersMonitor->check_is_space_available()) {
-				pthread_cond_wait(&signalUserRemoved, &mutexInput);
-			}
-			pUsersMonitor->add_user_last(userToAdd);
-			pthread_cond_signal(&signalUserAdded);
-			pthread_mutex_unlock(&mutexInput);
-			i++;
-		}
+		User userToAdd = get_user_from_value(usersArray[i]);
+		pUsersMonitor->add_user_last(userToAdd);
+		i++;
 	}
-	// NOTE: signals all threads that may be waiting indefinetely for user be added
-	pthread_cond_broadcast(&signalUserAdded);
 
 	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
 		int error = pthread_join(threads[i], NULL);
@@ -103,15 +89,6 @@ void read_file(const string &filePath, rapidjson::Document *pDocument) {
 	}
 }
 
-User get_user_from_value(rapidjson::Value &userValue) {
-	if (userValue.HasMember("name") && userValue["name"].IsString() && userValue.HasMember("year") && userValue["year"].IsInt() && userValue.HasMember("dayMonth") && userValue["dayMonth"].IsDouble()) {
-		const string name = userValue["name"].GetString();
-		const int year = userValue["year"].GetInt();
-		const double dayMonth = userValue["dayMonth"].GetDouble();
-		return User(name, year, dayMonth);
-	}
-	return User();
-}
 
 void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *pUsersResultMonitor) {
 	printf("\nUser Monitor: \n");
@@ -122,33 +99,15 @@ void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *
 	printf("User Result Monitor count: %d\n", pUsersResultMonitor->get_current_size());
 }
 
-int initialize_mutex_and_cond() {
-	int error;
-	if ((error = pthread_mutex_init(&mutexInput, NULL)) != 0) {
-		printf("Thread mutex cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	if ((error = pthread_mutex_init(&mutexOutput, NULL)) != 0) {
-		printf("Thread mutex cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	if ((error = pthread_cond_init(&signalUserAdded, NULL)) != 0) {
-		printf("Thread condition cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	if ((error = pthread_cond_init(&signalUserRemoved, NULL)) != 0) {
-		printf("Thread condition cannot be created: [%s]", strerror(error));
-		return error;
-	}
-	return 0;
-}
-
 void *create_thread(void *arg) {
 	UsersResultMonitor *pUsersResultMonitor = (UsersResultMonitor *) arg;
-	while (!pUsersResultMonitor->check_all_users_processed()) {
+	while (true) {
 		pthread_mutex_lock(&mutexInput);
 		while (pUsersResultMonitor->get_users_monitor_current_size() == 0 && !pUsersResultMonitor->check_all_users_added()) {
 			pthread_cond_wait(&signalUserAdded, &mutexInput);
+		}
+		if (pUsersResultMonitor->check_all_users_processed()) {
+			break;
 		}
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
 		pthread_cond_signal(&signalUserRemoved);
@@ -165,7 +124,6 @@ void *create_thread(void *arg) {
 			pUsersResultMonitor->increase_users_processed();
 			pthread_mutex_unlock(&mutexOutput);
 
-			/*UserResult::print_user_result(*pUserResultTemporary);*/
 			delete pUserResultTemporary;
 		}
 	}

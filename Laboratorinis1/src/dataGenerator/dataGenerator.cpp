@@ -11,9 +11,9 @@
 using namespace std;
 using namespace rapidjson;
 
-const char FILE_PATH[] = "./data/IFF22_BradaitisV_L1_dat_1.json";
+const char FILE_PATH[] = "./data/IFF22_BradaitisV_L1_dat_3.json";
 
-const float VALID_USERS_PERCENTAGE = 0.5;
+const float VALID_USERS_PERCENTAGE = 0;
 const int ARRAY_SIZE = 100;
 const char *NAMES[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys", "Ruta", "Rugile", "Greta", "Anastasija", "Ona" };
 

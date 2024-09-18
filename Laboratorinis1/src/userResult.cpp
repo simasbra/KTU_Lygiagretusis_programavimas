@@ -1,12 +1,4 @@
-#include <cstdio>
-#include <sstream>
-#include "cryptopp/sha.h"
-#include "cryptopp/hex.h"
-#include "cryptopp/filters.h"
-#include "user.h"
 #include "userResult.h"
-
-using namespace std;
 
 UserResult::UserResult() : user_(User()), hash_("") {}
 

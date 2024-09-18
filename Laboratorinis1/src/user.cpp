@@ -1,7 +1,4 @@
-#include <cstdio>
 #include "user.h"
-
-using namespace std;
 
 User::User() : name_(""), year_(0), dayMonth_(0) {}
 
@@ -40,6 +37,16 @@ bool User::is_valid() {
 	return false;
 }
 
-void User::print_user(User &user) {
-	printf("Name: %-20s Year: %10d DayMonth: %10.2lf\n", user.get_name().c_str(), user.get_year(), user.get_day_month());
+void User::print_user() {
+	printf("Name: %-20s Year: %10d DayMonth: %10.2lf\n", name_.c_str(), year_, dayMonth_);
+}
+
+User get_user_from_value(rapidjson::Value &userValue) {
+	if (userValue.HasMember("name") && userValue["name"].IsString() && userValue.HasMember("year") && userValue["year"].IsInt() && userValue.HasMember("dayMonth") && userValue["dayMonth"].IsDouble()) {
+		const string name = userValue["name"].GetString();
+		const int year = userValue["year"].GetInt();
+		const double dayMonth = userValue["dayMonth"].GetDouble();
+		return User(name, year, dayMonth);
+	}
+	return User();
 }
