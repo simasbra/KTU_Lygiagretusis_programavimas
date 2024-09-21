@@ -23,10 +23,10 @@ std::string generate_blake2b(string message);
 string generate_string(string name, int year, double dayMonth);
 
 int main(int args, char *arg[]) {
-    if (args != 3) {
-        printf("Usage: %s <filepath> <percentage>\n", arg[0]);
-        return 1;
-    }
+	if (args != 3) {
+		printf("Usage: %s <filepath> <percentage>\n", arg[0]);
+		return 1;
+	}
 	const char *FILE_PATH = arg[1];
 	const float VALID_USERS_PERCENTAGE = atof(arg[2]);
 	if (VALID_USERS_PERCENTAGE < 0 || VALID_USERS_PERCENTAGE > 1) {
@@ -47,7 +47,7 @@ int main(int args, char *arg[]) {
 	fill_array(usersArray, allocator, VALID_USERS_PERCENTAGE);
 	document.AddMember("users", usersArray, allocator);
 	document.AddMember("usersCount", ARRAY_SIZE, allocator);
-	
+
 	// converting document to json
 	StringBuffer buffer;
 	PrettyWriter<StringBuffer> writer(buffer);
@@ -66,13 +66,13 @@ void fill_array(Value &usersArray, Document::AllocatorType &allocator, const flo
 
 		int year = 1980 + i % 42;
 		double dayMonth = 1 + i % 12;
-        if (dayMonth == 2) {
-            dayMonth = (dayMonth / 100) + (1 + (i % ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) ? 29 : 28)));
-        } else if (dayMonth == 4 || dayMonth == 6 || dayMonth == 9 || dayMonth == 11) {
-            dayMonth = (dayMonth / 100) + (1 + (i % 30));
-        } else {
-            dayMonth = (dayMonth / 100) + (1 + (i % 31));
-        }
+		if (dayMonth == 2) {
+			dayMonth = (dayMonth / 100) + (1 + (i % ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) ? 29 : 28)));
+		} else if (dayMonth == 4 || dayMonth == 6 || dayMonth == 9 || dayMonth == 11) {
+			dayMonth = (dayMonth / 100) + (1 + (i % 30));
+		} else {
+			dayMonth = (dayMonth / 100) + (1 + (i % 31));
+		}
 		string name = NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))];
 		Value nameValue(NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))], allocator);
 
@@ -131,7 +131,7 @@ string generate_string(string name, int year, double dayMonth) {
 	stream << name << (year * dayMonth) << nameReverse;
 
 	regex_t regex;
-    regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
+	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 	string message = stream.str();
 	string result;
 	char previous = message[0];
@@ -151,9 +151,9 @@ string generate_string(string name, int year, double dayMonth) {
 				c = !c;
 				break;
 			default:
-			break;
+				break;
 		}
-        char charStr[2] = { c, '\0' };
+		char charStr[2] = { c, '\0' };
 		if (regexec(&regex, charStr, 0, NULL, 0) == 0) {
 			result += c;
 		}

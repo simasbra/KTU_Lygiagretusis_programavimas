@@ -4,7 +4,6 @@
 #include <thread>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include "userResult.h"
 #include "usersMonitor.h"
 #include "usersResultMonitor.h"
 
@@ -18,11 +17,12 @@ void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *
 void *create_thread(void *arg);
 
 int main(int args, char *arg[]) {
-    if (args != 2) {
-        printf("Usage: %s <filepath>\n", arg[0]);
-        return 1;
-    }
+	if (args != 2) {
+		printf("Usage: %s <filepath>\n", arg[0]);
+		return 1;
+	}
 	const char *FILE_PATH_DATA = arg[1];
+
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
@@ -34,8 +34,7 @@ int main(int args, char *arg[]) {
 		/*	User userTemporary = get_user_from_value(usersArray[i]);*/
 		/*	userTemporary.print_user();*/
 		/*}*/
-	}
-	else return 1;
+	} else return 1;
 
 	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
@@ -109,14 +108,7 @@ void *create_thread(void *arg) {
 	UsersResultMonitor *pUsersResultMonitor = (UsersResultMonitor *) arg;
 	while (!pUsersResultMonitor->check_all_users_processed()) {
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
-		if (userTemporary.is_valid()) {
-			UserResult *pUserResultTemporary = new UserResult(userTemporary);
-			pUserResultTemporary->set_hash(pUserResultTemporary->hash_using_blake2b());
-			pUsersResultMonitor->increase_users_processed();
-			if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
-				pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);
-			}
-		}
+		pUsersResultMonitor->process_user_result(&userTemporary);
 	}
 	return NULL;
 }

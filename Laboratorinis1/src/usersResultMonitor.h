@@ -39,6 +39,7 @@ public:
 	UserResult remove_user_result_last();
 	UserResult get_user_result_last();
 	bool check_all_users_processed();
+	bool process_user_result(User *pUserNew);
 
 	User get_user_last_from_users_monitor();
 	unsigned int get_users_monitor_current_size();

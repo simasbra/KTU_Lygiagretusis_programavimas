@@ -33,8 +33,8 @@ public:
 	void set_user(User newUser);
 	void set_hash(string hash);
 
-	string hash_using_sha256();
-	string hash_using_blake2b();
+	void hash_using_sha256();
+	void hash_using_blake2b();
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();

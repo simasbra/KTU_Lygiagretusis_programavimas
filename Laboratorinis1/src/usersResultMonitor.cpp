@@ -1,4 +1,5 @@
 #include "usersResultMonitor.h"
+#include "userResult.h"
 #include <pthread.h>
 
 UsersResultMonitor::UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor) : currentSize_(0), usersProcessed_(0), usersToBeAdded_(usersToBeAdded), pUsersMonitor_(pUsersMonitor) {
@@ -109,6 +110,20 @@ UserResult UsersResultMonitor::get_user_result_last() {
 
 bool UsersResultMonitor::check_all_users_processed() {
 	return usersProcessed_ == usersToBeAdded_;
+}
+
+bool UsersResultMonitor::process_user_result(User *pUserNew) {
+	if (pUserNew->is_valid()) {
+		UserResult *pUserResultTemporary = new UserResult(*pUserNew);
+		pUserResultTemporary->hash_using_blake2b();
+		increase_users_processed();
+		if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
+			add_user_result_sorted(*pUserResultTemporary);
+			return true;
+		}
+		delete pUserResultTemporary;
+	}
+	return false;
 }
 
 User UsersResultMonitor::get_user_last_from_users_monitor() {
