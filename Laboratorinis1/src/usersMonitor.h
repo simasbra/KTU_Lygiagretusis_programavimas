@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include "user.h"
 
+using namespace std;
+
 class UsersMonitor {
 private:
 	static const int MAX_SIZE_ = 16;
@@ -25,11 +27,13 @@ public:
 	pthread_mutex_t *get_mutex();
 	pthread_cond_t *get_conditional_user_added();
 	pthread_cond_t *get_conditional_user_removed();
-	void print_users();
+
 	void add_user_last(User userNew);
 	void add_user_sorted(User userNew);
 	User remove_user_last();
+
 	bool check_is_space_available();
+	void print_users();
 };
 
 #endif

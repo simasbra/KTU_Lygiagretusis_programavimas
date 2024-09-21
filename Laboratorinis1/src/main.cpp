@@ -10,7 +10,7 @@
 
 using namespace std;
 
-const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_2.json";
+const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_1.json";
 const string FILE_PATH_RESULT = "results/IFF22_BradaitisV_L1_rez.txt";
 
 void read_file(const string &filePath, rapidjson::Document *pDocument);
@@ -24,17 +24,18 @@ int main(void) {
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
 
+	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
+		usersArray = jsonDocument["users"];
+		/*for (unsigned int i = 0; i < usersArray.Size(); i++) {*/
+		/*	User userTemporary = get_user_from_value(usersArray[i]);*/
+		/*	userTemporary.print_user();*/
+		/*}*/
+	}
+	else return 1;
+
 	const unsigned int USER_COUNT = usersArray.Size();
 	const int MAX_THREAD_COUNT = min(USER_COUNT / 4, thread::hardware_concurrency());
 	pthread_t threads[MAX_THREAD_COUNT];
-
-	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
-		usersArray = jsonDocument["users"];
-		for(int i = 0; i < USER_COUNT; i++) {
-			User userTemporary = User::get_user_from_value(usersArray[i]);
-			userTemporary.print_user();
-		}
-	}
 
 	UsersMonitor *pUsersMonitor = new UsersMonitor();
 	UsersResultMonitor *pUsersResultMonitor = new UsersResultMonitor(USER_COUNT, pUsersMonitor);
@@ -48,8 +49,7 @@ int main(void) {
 
 	int i = 0;
 	while (pUsersMonitor->get_users_added() < USER_COUNT) {
-		User userToAdd = get_user_from_value(usersArray[i]);
-		pUsersMonitor->add_user_last(userToAdd);
+		pUsersMonitor->add_user_last(get_user_from_value(usersArray[i]));
 		i++;
 	}
 
@@ -89,42 +89,28 @@ void read_file(const string &filePath, rapidjson::Document *pDocument) {
 	}
 }
 
-
 void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *pUsersResultMonitor) {
 	printf("\nUser Monitor: \n");
 	pUsersMonitor->print_users();
+	printf("Users added count: %d\n", pUsersMonitor->get_users_added());
 	printf("User Monitor count: %d\n", pUsersMonitor->get_current_size());
 	printf("\nUser Result Monitor: \n");
 	pUsersResultMonitor->print_users_result();
+	printf("Users processed count: %d\n", pUsersResultMonitor->get_users_processed());
 	printf("User Result Monitor count: %d\n", pUsersResultMonitor->get_current_size());
 }
 
 void *create_thread(void *arg) {
 	UsersResultMonitor *pUsersResultMonitor = (UsersResultMonitor *) arg;
-	while (true) {
-		pthread_mutex_lock(&mutexInput);
-		while (pUsersResultMonitor->get_users_monitor_current_size() == 0 && !pUsersResultMonitor->check_all_users_added()) {
-			pthread_cond_wait(&signalUserAdded, &mutexInput);
-		}
-		if (pUsersResultMonitor->check_all_users_processed()) {
-			break;
-		}
+	while (!pUsersResultMonitor->check_all_users_processed()) {
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
-		pthread_cond_signal(&signalUserRemoved);
-		pthread_mutex_unlock(&mutexInput);
-
 		if (userTemporary.is_valid()) {
 			UserResult *pUserResultTemporary = new UserResult(userTemporary);
 			pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
-
-			pthread_mutex_lock(&mutexOutput);
+			pUsersResultMonitor->increase_users_processed();
 			if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 				pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);
 			}
-			pUsersResultMonitor->increase_users_processed();
-			pthread_mutex_unlock(&mutexOutput);
-
-			delete pUserResultTemporary;
 		}
 	}
 	return NULL;

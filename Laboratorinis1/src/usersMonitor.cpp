@@ -1,19 +1,20 @@
 #include "usersMonitor.h"
-#include "user.h"
+#include <cstdlib>
 #include <pthread.h>
 
-using namespace std;
-
-UsersMonitor::UsersMonitor() : currentSize_(0) {
+UsersMonitor::UsersMonitor() : currentSize_(0), usersAdded_(0) {
 	int error;
 	if ((error = pthread_mutex_init(&mutex_, NULL)) != 0) {
 		printf("Mutex cannot be created: [%s]", strerror(error));
+		exit(EXIT_FAILURE);
 	}
 	if ((error = pthread_cond_init(&conditionalUserAdded_, NULL)) != 0) {
 		printf("Conditional variable cannot be created: [%s]", strerror(error));
+		exit(EXIT_FAILURE);
 	}
 	if ((error = pthread_cond_init(&conditionalUserRemoved_, NULL)) != 0) {
 		printf("Conditional variable cannot be created: [%s]", strerror(error));
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -21,19 +22,15 @@ UsersMonitor::~UsersMonitor() {
 	int error;
 	if ((error = pthread_mutex_destroy(&mutex_)) != 0) {
 		printf("Mutex cannot be created: [%s]", strerror(error));
+		exit(EXIT_FAILURE);
 	}
 	if ((error = pthread_cond_destroy(&conditionalUserAdded_)) != 0) {
 		printf("Conditional variable cannot be created: [%s]", strerror(error));
+		exit(EXIT_FAILURE);
 	}
 	if ((error = pthread_cond_destroy(&conditionalUserRemoved_)) != 0) {
 		printf("Conditional variable cannot be created: [%s]", strerror(error));
-	}
-}
-
-void UsersMonitor::print_users() {
-	for (unsigned int i = 0; i < currentSize_; i++) {
-		printf("%4d ", i + 1);
-		users_[i].print_user();
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -63,7 +60,7 @@ pthread_cond_t * UsersMonitor::get_conditional_user_removed() {
 
 void UsersMonitor::add_user_last(User userNew) {
 	pthread_mutex_lock(&mutex_);
-	while (currentSize_ == MAX_SIZE_) {
+	while (!check_is_space_available()) {
 		pthread_cond_wait(&conditionalUserRemoved_, &mutex_);
 	}
 
@@ -76,11 +73,6 @@ void UsersMonitor::add_user_last(User userNew) {
 
 void UsersMonitor::add_user_sorted(User userNew) {
 	pthread_mutex_lock(&mutex_);
-	if (currentSize_ == 0) {
-		add_user_last(userNew);
-		pthread_mutex_unlock(&mutex_);
-		return;
-	}
 	while (currentSize_ == MAX_SIZE_) {
 		pthread_cond_wait(&conditionalUserRemoved_, &mutex_);
 	}
@@ -102,16 +94,26 @@ void UsersMonitor::add_user_sorted(User userNew) {
 User UsersMonitor::remove_user_last() {
 	pthread_mutex_lock(&mutex_);
 	if (currentSize_ == 0) {
+		pthread_mutex_unlock(&mutex_);
 		return User();
 	}
 
 	User userTemporary = users_[--currentSize_];
 	users_[currentSize_] = User();
-	return userTemporary;
 	pthread_cond_signal(&conditionalUserRemoved_);
 	pthread_mutex_unlock(&mutex_);
+	return userTemporary;
 }
 
 bool UsersMonitor::check_is_space_available() {
 	return currentSize_ < MAX_SIZE_;
+}
+
+void UsersMonitor::print_users() {
+	pthread_mutex_lock(&mutex_);
+	for (unsigned int i = 0; i < currentSize_; i++) {
+		printf("%4d ", i + 1);
+		users_[i].print_user();
+	}
+	pthread_mutex_unlock(&mutex_);
 }

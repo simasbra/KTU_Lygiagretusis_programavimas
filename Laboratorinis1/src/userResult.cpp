@@ -51,8 +51,7 @@ bool UserResult::check_hash_ends_with_a_number() {
 	return false;
 }
 
-void UserResult::print_user_result(UserResult &userResult) {
-	User user = userResult.get_user();
+void UserResult::print_user_result() {
 	printf("Name: %-20s Year: %10d DayMonth: %10.2lf Hash: %-64s\n",
-		user.get_name().c_str(), user.get_year(), user.get_day_month(), userResult.get_hash().c_str());
+		user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
 }

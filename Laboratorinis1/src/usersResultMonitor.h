@@ -1,9 +1,16 @@
 #ifndef USERS_RESULT_MONITOR
 #define USERS_RESULT_MONITOR
 
+#include <cstdio>
+#include <cstdlib>
+#include <pthread.h>
+#include <string>
 #include "userResult.h"
 #include "usersMonitor.h"
-#include <string>
+#include "userResult.h"
+#include "usersMonitor.h"
+
+using namespace std;
 
 class UsersResultMonitor {
 private:
@@ -14,6 +21,9 @@ private:
 	unsigned int usersToBeAdded_;
 
 	UsersMonitor *pUsersMonitor_;
+
+	pthread_mutex_t mutex_;
+	pthread_cond_t conditionalUserAdded_;
 
 public:
 	UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor);
@@ -28,14 +38,14 @@ public:
 	void add_user_result_sorted(UserResult userResultNew);
 	UserResult remove_user_result_last();
 	UserResult get_user_result_last();
-	bool check_all_users_added();
 	bool check_all_users_processed();
 
 	User get_user_last_from_users_monitor();
 	unsigned int get_users_monitor_current_size();
+	bool check_user_monitor_all_users_added();
 
 	void print_users_result();
-	void print_users_result_to_file(const std::string &filePath);
+	void print_users_result_to_file(const string &filePath);
 };
 
 #endif

@@ -32,7 +32,7 @@ public:
 	string generate_sha256();
 	bool check_hash_ends_with_a_number();
 
-	static void print_user_result(UserResult &userResult);
+	void print_user_result();
 };
 
 #endif
