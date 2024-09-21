@@ -1,4 +1,8 @@
 #include "userResult.h"
+#include "cryptopp/blake2.h"
+#include "cryptopp/config_int.h"
+#include "cryptopp/filters.h"
+#include "cryptopp/hex.h"
 
 UserResult::UserResult() : user_(User()), hash_("") {}
 
@@ -43,6 +47,25 @@ string UserResult::generate_sha256() {
 	return hashOutput;
 }
 
+string UserResult::generate_blake2s() {
+	User user = UserResult::get_user();
+	stringstream stream;
+	stream << user.get_name() << (user.get_year() * user.get_day_month());
+	string message = stream.str();
+
+	CryptoPP::BLAKE2s hash;;
+	CryptoPP::byte digest[CryptoPP::BLAKE2s::DIGESTSIZE];
+	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
+
+	CryptoPP::HexEncoder encoder;
+	string hashOutput;
+	encoder.Attach(new CryptoPP::StringSink(hashOutput));
+	encoder.Put(digest, sizeof(digest));
+	encoder.MessageEnd();
+
+	return hashOutput;
+}
+
 bool UserResult::check_hash_ends_with_a_number() {
 	char lastCharacter = hash_.back();
 	if (isdigit(lastCharacter)) {
@@ -52,6 +75,6 @@ bool UserResult::check_hash_ends_with_a_number() {
 }
 
 void UserResult::print_user_result() {
-	printf("Name: %-20s Year: %10d DayMonth: %10.2lf Hash: %-64s\n",
+	printf("Name: %-15s Year: %4d DayMonth: %5.2lf Hash: %-128s\n",
 		user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
 }

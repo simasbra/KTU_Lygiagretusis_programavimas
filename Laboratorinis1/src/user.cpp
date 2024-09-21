@@ -38,7 +38,7 @@ bool User::is_valid() {
 }
 
 void User::print_user() {
-	printf("Name: %-20s Year: %10d DayMonth: %10.2lf\n", name_.c_str(), year_, dayMonth_);
+	printf("Name: %-15s Year: %4d DayMonth: %5.2lf\n", name_.c_str(), year_, dayMonth_);
 }
 
 User get_user_from_value(rapidjson::Value &userValue) {

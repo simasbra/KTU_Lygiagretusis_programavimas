@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include "cryptopp/sha.h"
+#include "cryptopp/blake2.h"
 #include "cryptopp/hex.h"
 #include "cryptopp/filters.h"
 #include "user.h"
@@ -30,6 +31,7 @@ public:
 	void set_hash(string hash);
 	
 	string generate_sha256();
+	string generate_blake2s();
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();

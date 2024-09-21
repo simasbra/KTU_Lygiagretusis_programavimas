@@ -19,13 +19,13 @@ void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *
 void *create_thread(void *arg);
 
 int main(void) {
-	clock_t clockBegin = clock();
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
 
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		usersArray = jsonDocument["users"];
+		/*printf("Users: \n");*/
 		/*for (unsigned int i = 0; i < usersArray.Size(); i++) {*/
 		/*	User userTemporary = get_user_from_value(usersArray[i]);*/
 		/*	userTemporary.print_user();*/
@@ -33,6 +33,7 @@ int main(void) {
 	}
 	else return 1;
 
+	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
 	const int MAX_THREAD_COUNT = min(USER_COUNT / 4, thread::hardware_concurrency());
 	pthread_t threads[MAX_THREAD_COUNT];
@@ -106,7 +107,7 @@ void *create_thread(void *arg) {
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
 		if (userTemporary.is_valid()) {
 			UserResult *pUserResultTemporary = new UserResult(userTemporary);
-			pUserResultTemporary->set_hash(pUserResultTemporary->generate_sha256());
+			pUserResultTemporary->set_hash(pUserResultTemporary->generate_blake2s());
 			pUsersResultMonitor->increase_users_processed();
 			if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 				pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);

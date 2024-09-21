@@ -5,21 +5,23 @@
 #include "../rapidjson/prettywriter.h"
 #include "../rapidjson/stringbuffer.h"
 #include "../cryptopp/sha.h"
+#include "../cryptopp/blake2.h"
 #include "../cryptopp/hex.h"
 #include "../cryptopp/filters.h"
 
 using namespace std;
 using namespace rapidjson;
 
-const char FILE_PATH[] = "./data/IFF22_BradaitisV_L1_dat_3.json";
+const char FILE_PATH[] = "./data/IFF22_BradaitisV_L1_dat_1.json";
 
-const float VALID_USERS_PERCENTAGE = 0;
+const float VALID_USERS_PERCENTAGE = 1;
 const int ARRAY_SIZE = 100;
 const char *NAMES[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys", "Ruta", "Rugile", "Greta", "Anastasija", "Ona" };
 
 void fill_array(Value &usersArray, Document::AllocatorType &allocator);
 bool check_hash_ends_with_a_number(string hash);
 std::string generate_sha256(string name, int year, double dayMonth);
+std::string generate_blake2s(string name, int year, double dayMonth);
 
 int main(void) {
 	FILE *pFile = fopen(FILE_PATH, "w");
@@ -58,7 +60,7 @@ void fill_array(Value &usersArray, Document::AllocatorType &allocator) {
 		string name = NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))];
 		Value nameValue(NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))], allocator);
 
-		string hash = generate_sha256(name, year, dayMonth);
+		string hash = generate_blake2s(name, year, dayMonth);
 		if (!check_hash_ends_with_a_number(hash) && usersAdded < ARRAY_SIZE * VALID_USERS_PERCENTAGE) {
 			userObject.AddMember("name", nameValue, allocator);
 			userObject.AddMember("year", year, allocator);
@@ -85,6 +87,24 @@ std::string generate_sha256(string name, int year, double dayMonth) {
 
 	CryptoPP::SHA256 hash;
 	CryptoPP::byte digest[CryptoPP::SHA256::DIGESTSIZE];
+	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
+
+	CryptoPP::HexEncoder encoder;
+	string hashOutput;
+	encoder.Attach(new CryptoPP::StringSink(hashOutput));
+	encoder.Put(digest, sizeof(digest));
+	encoder.MessageEnd();
+
+	return hashOutput;
+}
+
+std::string generate_blake2s(string name, int year, double dayMonth) {
+	stringstream stream;
+	stream << name << (year * dayMonth);
+	string message = stream.str();
+
+	CryptoPP::BLAKE2s hash;;
+	CryptoPP::byte digest[CryptoPP::BLAKE2s::DIGESTSIZE];
 	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
 
 	CryptoPP::HexEncoder encoder;
