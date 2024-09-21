@@ -10,7 +10,6 @@
 
 using namespace std;
 
-const string FILE_PATH_DATA = "data/IFF22_BradaitisV_L1_dat_1.json";
 const string FILE_PATH_RESULT = "results/IFF22_BradaitisV_L1_rez.txt";
 
 void read_file(const string &filePath, rapidjson::Document *pDocument);
@@ -18,7 +17,12 @@ User get_user_from_value(rapidjson::Value &userValue);
 void print_monitors_statistics(UsersMonitor *pUsersMonitor, UsersResultMonitor *pUsersResultMonitor);
 void *create_thread(void *arg);
 
-int main(void) {
+int main(int args, char *arg[]) {
+    if (args != 2) {
+        printf("Usage: %s <filepath>\n", arg[0]);
+        return 1;
+    }
+	const char *FILE_PATH_DATA = arg[1];
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
@@ -107,7 +111,7 @@ void *create_thread(void *arg) {
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
 		if (userTemporary.is_valid()) {
 			UserResult *pUserResultTemporary = new UserResult(userTemporary);
-			pUserResultTemporary->set_hash(pUserResultTemporary->generate_blake2s());
+			pUserResultTemporary->set_hash(pUserResultTemporary->hash_using_blake2b());
 			pUsersResultMonitor->increase_users_processed();
 			if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 				pUsersResultMonitor->add_user_result_sorted(*pUserResultTemporary);

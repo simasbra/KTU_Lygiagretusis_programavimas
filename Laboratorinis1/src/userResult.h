@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <sstream>
 #include <string>
+#include <regex.h>
 #include "cryptopp/sha.h"
 #include "cryptopp/blake2.h"
 #include "cryptopp/hex.h"
@@ -18,6 +19,8 @@ private:
 	User user_;
 	string hash_;
 
+	string generate_string();
+
 public:
 	UserResult();
 	UserResult(User user);
@@ -29,9 +32,9 @@ public:
 
 	void set_user(User newUser);
 	void set_hash(string hash);
-	
-	string generate_sha256();
-	string generate_blake2s();
+
+	string hash_using_sha256();
+	string hash_using_blake2b();
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();

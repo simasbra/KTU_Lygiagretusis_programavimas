@@ -1,8 +1,4 @@
 #include "userResult.h"
-#include "cryptopp/blake2.h"
-#include "cryptopp/config_int.h"
-#include "cryptopp/filters.h"
-#include "cryptopp/hex.h"
 
 UserResult::UserResult() : user_(User()), hash_("") {}
 
@@ -28,12 +24,8 @@ void UserResult::set_hash(string hash) {
 	UserResult::hash_ = hash;
 }
 
-string UserResult::generate_sha256() {
-	User user = UserResult::get_user();
-	stringstream stream;
-	stream << user.get_name() << (user.get_year() * user.get_day_month());
-	string message = stream.str();
-
+string UserResult::hash_using_sha256() {
+	string message = generate_string();
 	CryptoPP::SHA256 hash;
 	CryptoPP::byte digest[CryptoPP::SHA256::DIGESTSIZE];
 	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
@@ -47,14 +39,10 @@ string UserResult::generate_sha256() {
 	return hashOutput;
 }
 
-string UserResult::generate_blake2s() {
-	User user = UserResult::get_user();
-	stringstream stream;
-	stream << user.get_name() << (user.get_year() * user.get_day_month());
-	string message = stream.str();
-
-	CryptoPP::BLAKE2s hash;;
-	CryptoPP::byte digest[CryptoPP::BLAKE2s::DIGESTSIZE];
+string UserResult::hash_using_blake2b() {
+	string message = generate_string();
+	CryptoPP::BLAKE2b hash;;
+	CryptoPP::byte digest[CryptoPP::BLAKE2b::DIGESTSIZE];
 	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
 
 	CryptoPP::HexEncoder encoder;
@@ -77,4 +65,44 @@ bool UserResult::check_hash_ends_with_a_number() {
 void UserResult::print_user_result() {
 	printf("Name: %-15s Year: %4d DayMonth: %5.2lf Hash: %-128s\n",
 		user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
+}
+
+string UserResult::generate_string() {
+	User user = UserResult::get_user();
+	string nameReverse = user.get_name();
+	reverse(nameReverse.begin(), nameReverse.end());
+	stringstream stream;
+	stream << user.get_name() << (user.get_year() * user.get_day_month()) << nameReverse;
+
+	regex_t regex;
+    regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
+	string message = stream.str();
+	string result;
+	char previous = message[0];
+	for (int i = 0; result.length() < 16; i++) {
+		char c = message[i % message.length()];
+		switch(i % 5) {
+			case 0:
+				c = c | (previous & c);
+				break;
+			case 1:
+				c = c ^ previous;
+				break;
+			case 2:
+				c = c & previous;
+				break;
+			case 3:
+				c = !c;
+				break;
+			default:
+			break;
+		}
+        char charStr[2] = { c, '\0' };
+		if (regexec(&regex, charStr, 0, NULL, 0) == 0) {
+			result += c;
+		}
+		previous = c | message[i % message.length()];
+	}
+
+	return result;
 }
