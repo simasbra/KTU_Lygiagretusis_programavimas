@@ -13,22 +13,22 @@
 using namespace std;
 using namespace rapidjson;
 
-const int ARRAY_SIZE = 100;
 const char *NAMES[] = { "Jonas", "Petras", "Antanas", "Juozas", "Stasys", "Ruta", "Rugile", "Greta", "Anastasija", "Ona", "Bulve" };
 
-void fill_array(Value &usersArray, Document::AllocatorType &allocator, const float &VALID_USERS_PERCENTAGE);
+void fill_array(Value &usersArray, Document::AllocatorType &allocator, const float &VALID_USERS_PERCENTAGE, const int &ARRAY_SIZE);
 bool check_hash_ends_with_a_number(string hash);
 std::string generate_sha256(string message);
 std::string generate_blake2b(string message);
 string generate_string(string name, int year, double dayMonth);
 
 int main(int args, char *arg[]) {
-	if (args != 3) {
+	if (args != 4) {
 		printf("Usage: %s <filepath> <percentage>\n", arg[0]);
 		return 1;
 	}
 	const char *FILE_PATH = arg[1];
 	const float VALID_USERS_PERCENTAGE = atof(arg[2]);
+	const int ARRAY_SIZE = atof(arg[3]);
 	if (VALID_USERS_PERCENTAGE < 0 || VALID_USERS_PERCENTAGE > 1) {
 		printf("Percentage must be between 0 and 1.\n");
 		return 1;
@@ -44,7 +44,7 @@ int main(int args, char *arg[]) {
 	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
 
 	Value usersArray(kArrayType);
-	fill_array(usersArray, allocator, VALID_USERS_PERCENTAGE);
+	fill_array(usersArray, allocator, VALID_USERS_PERCENTAGE, ARRAY_SIZE);
 	document.AddMember("users", usersArray, allocator);
 	document.AddMember("usersCount", ARRAY_SIZE, allocator);
 
@@ -59,7 +59,7 @@ int main(int args, char *arg[]) {
 	return 0;
 }
 
-void fill_array(Value &usersArray, Document::AllocatorType &allocator, const float &VALID_USERS_PERCENTAGE) {
+void fill_array(Value &usersArray, Document::AllocatorType &allocator, const float &VALID_USERS_PERCENTAGE, const int &ARRAY_SIZE) {
 	int usersAdded = 0;
 	for (int i = 0; usersAdded < ARRAY_SIZE; i++) {
 		Value userObject(kObjectType);

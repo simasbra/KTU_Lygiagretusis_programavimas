@@ -101,6 +101,5 @@ string UserResult::generate_string() {
 		}
 		previous = c | message[i % message.length()];
 	}
-
 	return result;
 }

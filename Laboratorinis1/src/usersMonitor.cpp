@@ -1,6 +1,4 @@
 #include "usersMonitor.h"
-#include <cstdlib>
-#include <pthread.h>
 
 UsersMonitor::UsersMonitor() : currentSize_(0), usersAdded_(0) {
 	int error;

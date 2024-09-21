@@ -1,6 +1,5 @@
 #include "usersResultMonitor.h"
 #include "userResult.h"
-#include <pthread.h>
 
 UsersResultMonitor::UsersResultMonitor(int usersToBeAdded, UsersMonitor *pUsersMonitor) : currentSize_(0), usersProcessed_(0), usersToBeAdded_(usersToBeAdded), pUsersMonitor_(pUsersMonitor) {
 	int error;
@@ -109,7 +108,11 @@ UserResult UsersResultMonitor::get_user_result_last() {
 }
 
 bool UsersResultMonitor::check_all_users_processed() {
-	return usersProcessed_ == usersToBeAdded_;
+	if (usersProcessed_ == usersToBeAdded_) {
+		pthread_cond_broadcast(pUsersMonitor_->get_conditional_user_added());
+		return true;
+	}
+	return false;
 }
 
 bool UsersResultMonitor::process_user_result(User *pUserNew) {
@@ -128,10 +131,13 @@ bool UsersResultMonitor::process_user_result(User *pUserNew) {
 
 User UsersResultMonitor::get_user_last_from_users_monitor() {
 	pthread_mutex_lock(&mutex_);
-	while (get_users_monitor_current_size() == 0 && !check_user_monitor_all_users_added()) {
+	while (get_users_monitor_current_size() == 0 && !check_user_monitor_all_users_added() && !check_all_users_processed()) {
 		pthread_cond_wait(pUsersMonitor_->get_conditional_user_added(), &mutex_);
 	}
-	User userTemporary = pUsersMonitor_->remove_user_last();
+	User userTemporary;
+	if (get_users_monitor_current_size() > 0) {
+		userTemporary = pUsersMonitor_->remove_user_last();
+	}
 	pthread_mutex_unlock(&mutex_);
 	return userTemporary;
 }
@@ -161,6 +167,7 @@ void UsersResultMonitor::print_users_result_to_file(const string &filePath) {
 	pthread_mutex_lock(&mutex_);
 	FILE *pFile = fopen(filePath.c_str(), "w");
 	if (pFile == NULL) {
+		pthread_mutex_unlock(&mutex_);
 		return;
 	}
 

@@ -29,7 +29,7 @@ const string ALGORITHM_TYPES[] = {
 void read_file(const string &filePath, rapidjson::Document *pDocument);
 User get_user_from_value(rapidjson::Value &userValue);
 void *create_thread(void *arg);
-void run_test(rapidjson::Value &usersArray, AlgorithmType type, int testCount);
+double run_test(rapidjson::Value &usersArray, AlgorithmType type, int testCount);
 
 int main(int args, char *arg[]) {
 	if (args != 3) {
@@ -38,7 +38,9 @@ int main(int args, char *arg[]) {
 	}
 	const char *FILE_PATH_DATA = arg[1];
 	const int TEST_COUNT = atof(arg[2]);
+	double testResults[COUNT - 1];
 
+	clock_t clockBegin = clock();
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
@@ -49,8 +51,15 @@ int main(int args, char *arg[]) {
 	else return 1;
 
 	for (int i = 0; i < COUNT; i++) {
-		run_test(usersArray, (AlgorithmType)i, TEST_COUNT);
+		testResults[i] = run_test(usersArray, (AlgorithmType)i, TEST_COUNT);
 	}
+	clock_t clockEnd = clock();
+	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
+
+	for (int i = 0; i < COUNT; i++) {
+		printf("%s Time spent: %lfs\n", ALGORITHM_TYPES[i].c_str(), testResults[i]);
+	}
+	printf("Time spent running tests: %lfs\n", timeSpent);
 
 	return 0;
 }
@@ -111,7 +120,7 @@ void *create_thread(void *arg) {
 	return NULL;
 }
 
-void run_test(rapidjson::Value &usersArray, AlgorithmType type, int testCount) {
+double run_test(rapidjson::Value &usersArray, AlgorithmType type, int testCount) {
 	double timeSpentAverage = 0;
 	printf("\nAlgorithm: %s\n\n", ALGORITHM_TYPES[type].c_str());
 	for (int i = 0; i < testCount; i++) {
@@ -147,11 +156,11 @@ void run_test(rapidjson::Value &usersArray, AlgorithmType type, int testCount) {
 		clock_t clockEnd = clock();
 		double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
 		timeSpentAverage += timeSpent;
-		/*printf("%8d Time spent: %lfs\n", i, timeSpent);*/
+		printf("%8d Time spent: %lfs\n", i, timeSpent);
 
 		delete pUsersMonitor;
 		delete pUsersResultMonitor;
 	}
 	timeSpentAverage /= testCount;
-	printf("\nAverage time spent: %lfs\n", timeSpentAverage);
+	return timeSpentAverage;
 }

@@ -29,11 +29,11 @@ int main(int args, char *arg[]) {
 
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		usersArray = jsonDocument["users"];
-		/*printf("Users: \n");*/
-		/*for (unsigned int i = 0; i < usersArray.Size(); i++) {*/
-		/*	User userTemporary = get_user_from_value(usersArray[i]);*/
-		/*	userTemporary.print_user();*/
-		/*}*/
+		printf("Users: \n");
+		for (unsigned int i = 0; i < usersArray.Size(); i++) {
+			User userTemporary = get_user_from_value(usersArray[i]);
+			userTemporary.print_user();
+		}
 	} else return 1;
 
 	clock_t clockBegin = clock();
