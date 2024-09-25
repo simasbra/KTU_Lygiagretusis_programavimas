@@ -109,7 +109,7 @@ UserResult UsersResultMonitor::get_user_result_last() {
 
 bool UsersResultMonitor::check_all_users_processed() {
 	if (usersProcessed_ == usersToBeAdded_) {
-		pthread_cond_broadcast(pUsersMonitor_->get_conditional_user_added());
+		pthread_cond_signal(pUsersMonitor_->get_conditional_user_added());
 		return true;
 	}
 	return false;
@@ -171,20 +171,20 @@ void UsersResultMonitor::print_users_result_to_file(const string &filePath) {
 		return;
 	}
 
-	string dashes = "+----------------------+------------+------------+------------------------------------------------------------------+";
+	string dashes = "+----------------------+------------+------------+----------------------------------------------------------------------------------------------------------------------------------+";
 	fprintf(pFile, "%s\n", dashes.c_str());
-	fprintf(pFile, "| %-20s | %-10s | %-10s | %-64s |\n", "Name", "Year", "Day Month", "SHA256 hash");
+	fprintf(pFile, "| %-20s | %-10s | %-10s | %-128s |\n", "Name", "Year", "Day Month", "BLAKE2b hash");
 	fprintf(pFile, "%s\n", dashes.c_str());
 
 	for (unsigned int i = 0; i < currentSize_; i++) {
 		User user = usersResult_[i].get_user();
-		fprintf(pFile, "| %-20s | %10d | %10.2lf | %-64s |\n",
+		fprintf(pFile, "| %-20s | %10d | %10.2lf | %-128s |\n",
 			user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_hash().c_str());
 	}
 
 	fprintf(pFile, "%s\n", dashes.c_str());
-	fprintf(pFile, "| Users total: %-100d |\n", currentSize_);
-	fprintf(pFile, "%s\n", "+-------------------------------------------------------------------------------------------------------------------+");
+	fprintf(pFile, "| Users total: %-164d |\n", currentSize_);
+	fprintf(pFile, "%s\n", "+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 	fclose(pFile);
 	pthread_mutex_unlock(&mutex_);
 }

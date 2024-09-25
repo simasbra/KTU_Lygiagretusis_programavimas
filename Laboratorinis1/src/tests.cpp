@@ -38,7 +38,7 @@ int main(int args, char *arg[]) {
 	}
 	const char *FILE_PATH_DATA = arg[1];
 	const int TEST_COUNT = atof(arg[2]);
-	double testResults[COUNT - 1];
+	double testTimes[COUNT - 1];
 
 	clock_t clockBegin = clock();
 	rapidjson::Document jsonDocument;
@@ -51,13 +51,13 @@ int main(int args, char *arg[]) {
 	else return 1;
 
 	for (int i = 0; i < COUNT; i++) {
-		testResults[i] = run_test(usersArray, (AlgorithmType)i, TEST_COUNT);
+		testTimes[i] = run_test(usersArray, (AlgorithmType)i, TEST_COUNT);
 	}
 	clock_t clockEnd = clock();
 	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
 
 	for (int i = 0; i < COUNT; i++) {
-		printf("%s Time spent: %lfs\n", ALGORITHM_TYPES[i].c_str(), testResults[i]);
+		printf("%s Time spent: %lfs\n", ALGORITHM_TYPES[i].c_str(), testTimes[i]);
 	}
 	printf("Time spent running tests: %lfs\n", timeSpent);
 

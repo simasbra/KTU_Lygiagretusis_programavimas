@@ -32,13 +32,14 @@ int main(int args, char *arg[]) {
 		printf("Users: \n");
 		for (unsigned int i = 0; i < usersArray.Size(); i++) {
 			User userTemporary = get_user_from_value(usersArray[i]);
+			printf("%4d ", i + 1);
 			userTemporary.print_user();
 		}
 	} else return 1;
 
 	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
-	const int MAX_THREAD_COUNT = min(USER_COUNT / 4, thread::hardware_concurrency());
+	const int MAX_THREAD_COUNT = max(1, (int)min(USER_COUNT / 4, thread::hardware_concurrency()));
 	pthread_t threads[MAX_THREAD_COUNT];
 
 	UsersMonitor *pUsersMonitor = new UsersMonitor();
