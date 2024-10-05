@@ -19,8 +19,6 @@ private:
 	User user_;
 	string hash_;
 
-	string generate_string();
-
 public:
 	UserResult();
 	UserResult(User user);
@@ -33,11 +31,12 @@ public:
 	void set_user(User newUser);
 	void set_hash(string hash);
 
-	void hash_using_sha256();
-	void hash_using_blake2b();
+	string hash_using_sha256(string message);
+	string hash_using_blake2b(string message);
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();
+	string generate_string();
 };
 
 #endif

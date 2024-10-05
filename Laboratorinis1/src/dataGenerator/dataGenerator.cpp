@@ -23,7 +23,7 @@ string generate_string(string name, int year, double dayMonth);
 
 int main(int args, char *arg[]) {
 	if (args != 4) {
-		printf("Usage: %s <filepath> <percentage>\n", arg[0]);
+		printf("Usage: %s <filePath> <percentage> <arraySize>\n", arg[0]);
 		return 1;
 	}
 	const char *FILE_PATH = arg[1];
@@ -76,7 +76,7 @@ void fill_array(Value &usersArray, Document::AllocatorType &allocator, const flo
 		string name = NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))];
 		Value nameValue(NAMES[i % (sizeof(NAMES) / sizeof(NAMES[0]))], allocator);
 
-		string hash = generate_blake2b(generate_string(name, year, dayMonth));
+		string hash = generate_blake2b(generate_sha256(generate_string(name, year, dayMonth)));
 		if (!check_hash_ends_with_a_number(hash) && usersAdded < ARRAY_SIZE * VALID_USERS_PERCENTAGE) {
 			userObject.AddMember("name", nameValue, allocator);
 			userObject.AddMember("year", year, allocator);

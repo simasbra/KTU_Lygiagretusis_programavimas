@@ -118,7 +118,9 @@ bool UsersResultMonitor::check_all_users_processed() {
 bool UsersResultMonitor::process_user_result(User *pUserNew) {
 	if (pUserNew->is_valid()) {
 		UserResult *pUserResultTemporary = new UserResult(*pUserNew);
-		pUserResultTemporary->hash_using_blake2b();
+		string message = pUserResultTemporary->generate_string();
+		string hashedOutput = pUserResultTemporary->hash_using_blake2b(pUserResultTemporary->hash_using_sha256(message));
+		pUserResultTemporary->set_hash(hashedOutput);
 		increase_users_processed();
 		if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 			add_user_result_sorted(*pUserResultTemporary);

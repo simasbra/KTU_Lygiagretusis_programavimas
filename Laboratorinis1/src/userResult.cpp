@@ -24,8 +24,7 @@ void UserResult::set_hash(string hash) {
 	UserResult::hash_ = hash;
 }
 
-void UserResult::hash_using_sha256() {
-	string message = generate_string();
+string UserResult::hash_using_sha256(string message) {
 	CryptoPP::SHA256 hash;
 	CryptoPP::byte digest[CryptoPP::SHA256::DIGESTSIZE];
 	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
@@ -35,11 +34,10 @@ void UserResult::hash_using_sha256() {
 	encoder.Attach(new CryptoPP::StringSink(hashOutput));
 	encoder.Put(digest, sizeof(digest));
 	encoder.MessageEnd();
-	set_hash(hashOutput);
+	return hashOutput;
 }
 
-void UserResult::hash_using_blake2b() {
-	string message = generate_string();
+string UserResult::hash_using_blake2b(string message) {
 	CryptoPP::BLAKE2b hash;;
 	CryptoPP::byte digest[CryptoPP::BLAKE2b::DIGESTSIZE];
 	hash.CalculateDigest(digest, reinterpret_cast<const CryptoPP::byte*>(message.c_str()), message.length());
@@ -49,7 +47,7 @@ void UserResult::hash_using_blake2b() {
 	encoder.Attach(new CryptoPP::StringSink(hashOutput));
 	encoder.Put(digest, sizeof(digest));
 	encoder.MessageEnd();
-	set_hash(hashOutput);
+	return hashOutput;
 }
 
 bool UserResult::check_hash_ends_with_a_number() {
