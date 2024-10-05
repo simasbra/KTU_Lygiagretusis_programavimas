@@ -100,12 +100,13 @@ void *create_thread(void *arg) {
 		User userTemporary = pUsersResultMonitor->get_user_last_from_users_monitor();
 		if (userTemporary.is_valid()) {
 			UserResult *pUserResultTemporary = new UserResult(userTemporary);
+			string message = pUserResultTemporary->generate_string();
 			switch(*(pThreadArguments->pType)) {
 				case SHA256:
-					pUserResultTemporary->hash_using_sha256();
+					pUserResultTemporary->set_hash(pUserResultTemporary->hash_using_sha256(message));
 					break;
 				case BLAKE2B:
-					pUserResultTemporary->hash_using_blake2b();
+					pUserResultTemporary->set_hash(pUserResultTemporary->hash_using_blake2b(message));
 					break;
 				default:
 					break;

@@ -116,19 +116,20 @@ bool UsersResultMonitor::check_all_users_processed() {
 }
 
 bool UsersResultMonitor::process_user_result(User *pUserNew) {
-	if (pUserNew->is_valid()) {
-		UserResult *pUserResultTemporary = new UserResult(*pUserNew);
-		string message = pUserResultTemporary->generate_string();
-		string hashedOutput = pUserResultTemporary->hash_using_blake2b(pUserResultTemporary->hash_using_sha256(message));
-		pUserResultTemporary->set_hash(hashedOutput);
-		increase_users_processed();
-		if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
-			add_user_result_sorted(*pUserResultTemporary);
-			return true;
-		}
-		delete pUserResultTemporary;
+	if (!pUserNew->is_valid()) {
+		return false;
 	}
-	return false;
+
+	UserResult *pUserResultTemporary = new UserResult(*pUserNew);
+	string message = pUserResultTemporary->generate_string();
+	string hashedOutput = pUserResultTemporary->hash_using_blake2b(pUserResultTemporary->hash_using_sha256(message));
+	pUserResultTemporary->set_hash(hashedOutput);
+	increase_users_processed();
+	if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
+		add_user_result_sorted(*pUserResultTemporary);
+	}
+	delete pUserResultTemporary;
+	return true;
 }
 
 User UsersResultMonitor::get_user_last_from_users_monitor() {
@@ -175,13 +176,13 @@ void UsersResultMonitor::print_users_result_to_file(const string &filePath) {
 
 	string dashes = "+----------------------+------------+------------+----------------------------------------------------------------------------------------------------------------------------------+";
 	fprintf(pFile, "%s\n", dashes.c_str());
-	fprintf(pFile, "| %-20s | %-10s | %-10s | %-128s |\n", "Name", "Year", "Day Month", "BLAKE2b hash");
+	fprintf(pFile, "| %-20s | %-10s | %-10s | %-128s |\n", "Name", "Year", "Day Month", "SHA256 + BLAKE2b hash");
 	fprintf(pFile, "%s\n", dashes.c_str());
 
 	for (unsigned int i = 0; i < currentSize_; i++) {
 		User user = usersResult_[i].get_user();
 		fprintf(pFile, "| %-20s | %10d | %10.2lf | %-128s |\n",
-			user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_hash().c_str());
+		  user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_hash().c_str());
 	}
 
 	fprintf(pFile, "%s\n", dashes.c_str());

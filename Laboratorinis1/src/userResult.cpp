@@ -1,10 +1,10 @@
 #include "userResult.h"
 
-UserResult::UserResult() : user_(User()), hash_("") {}
+UserResult::UserResult() : user_(User()), hash_(""), sum_(0) {}
 
-UserResult::UserResult(User user) : user_(user), hash_("") {}
+UserResult::UserResult(User user) : user_(user), hash_(""), sum_(0) {}
 
-UserResult::UserResult(User user, string hash) : user_(user), hash_(hash) {}
+UserResult::UserResult(User user, string hash) : user_(user), hash_(hash), sum_(0) {}
 
 UserResult::~UserResult() {}
 
@@ -16,12 +16,20 @@ string UserResult::get_hash() {
 	return hash_;
 }
 
+double UserResult::get_sum() {
+	return sum_;
+}
+
 void UserResult::set_user(User newUser) {
 	user_ = newUser;
 }
 
-void UserResult::set_hash(string hash) {
-	UserResult::hash_ = hash;
+void UserResult::set_hash(string newHash) {
+	hash_ = newHash;
+}
+
+void UserResult::set_sum(double newSum) {
+	sum_ = newSum;
 }
 
 string UserResult::hash_using_sha256(string message) {
@@ -60,7 +68,12 @@ bool UserResult::check_hash_ends_with_a_number() {
 
 void UserResult::print_user_result() {
 	printf("Name: %-15s Year: %4d DayMonth: %5.2lf Hash: %-128s\n",
-		user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
+	user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
+}
+
+void UserResult::print_user_result_with_sum() {
+	printf("Name: %-15s Year: %4d DayMonth: %5.2lf Sum: %5.2lf Hash: %-128s\n",
+	user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), sum_, hash_.c_str());
 }
 
 string UserResult::generate_string() {
@@ -71,7 +84,7 @@ string UserResult::generate_string() {
 	stream << user.get_name() << (user.get_year() * user.get_day_month()) << nameReverse;
 
 	regex_t regex;
-    regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
+	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 	string message = stream.str();
 	string result;
 	char previous = message[0];
@@ -91,13 +104,18 @@ string UserResult::generate_string() {
 				c = !c;
 				break;
 			default:
-			break;
+				break;
 		}
-        char charStr[2] = { c, '\0' };
+		char charStr[2] = { c, '\0' };
 		if (regexec(&regex, charStr, 0, NULL, 0) == 0) {
 			result += c;
 		}
 		previous = c | message[i % message.length()];
 	}
 	return result;
+}
+
+void UserResult::calculate_set_sum() {
+	double sum = user_.get_day_month() + user_.get_year();
+	set_sum(sum);
 }

@@ -17,6 +17,7 @@ using namespace std;
 class UserResult {
 private:
 	User user_;
+	double sum_;
 	string hash_;
 
 public:
@@ -27,16 +28,20 @@ public:
 
 	User get_user();
 	string get_hash();
+	double get_sum();
 
 	void set_user(User newUser);
-	void set_hash(string hash);
+	void set_hash(string newHash);
+	void set_sum(double newSum);
 
 	string hash_using_sha256(string message);
 	string hash_using_blake2b(string message);
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();
+	void print_user_result_with_sum();
 	string generate_string();
+	void calculate_set_sum();
 };
 
 #endif
