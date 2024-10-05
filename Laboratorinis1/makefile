@@ -8,8 +8,8 @@ RAPIDJSON_DIR = $(SRCDIR)rapidjson
 CRYPTOPP_DIR = $(SRCDIR)cryptopp
 
 # Source files
-SRCS_USERS = $(SRCDIR)main.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
-SRCS_TESTS = $(SRCDIR)tests.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
+SRCS_USERS = $(SRCDIR)mainA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
+SRCS_TESTS = $(SRCDIR)testsA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
 SRCS_DATA_GENERATOR = $(SRCDIR)dataGenerator/dataGenerator.cpp
 
 # Includes
