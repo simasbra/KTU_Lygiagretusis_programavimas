@@ -1,10 +1,9 @@
 #include <cstring>
 #include <ctime>
-#include <pthread.h>
 #include <thread>
+#include <omp.h>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include "usersMonitor.h"
 #include "openmpMonitor.h"
 
 using namespace std;
@@ -13,7 +12,6 @@ const string FILE_PATH_RESULT = "results/IFF22_BradaitisV_L1_rez.txt";
 
 void read_file(const string &filePath, rapidjson::Document *pDocument);
 User get_user_from_value(rapidjson::Value &userValue);
-void *create_thread(void *arg);
 
 int main(int args, char *arg[]) {
 	if (args != 2) {
@@ -38,31 +36,31 @@ int main(int args, char *arg[]) {
 
 	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
-	const int MAX_THREAD_COUNT = max(1, (int)min(USER_COUNT / 4, thread::hardware_concurrency()));
-	pthread_t threads[MAX_THREAD_COUNT];
+	/*const int MAX_THREAD_COUNT = max(1, (int)min(USER_COUNT / 4, thread::hardware_concurrency()));*/
 
-	UsersMonitor *pUsersMonitor = new UsersMonitor();
-	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT, pUsersMonitor);
+	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT);
 
-	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
-		int error = pthread_create(&threads[i], NULL, create_thread, pOpenMPMonitor);
-		if (error != 0) {
-			printf("Thread cannot be created: [%s]", strerror(error));
-		}
-	}
+	/*rapidjson::Value users[MAX_THREAD_COUNT];*/
+	/*int usersAddedToArrays = 0;*/
+	/*for (int i = 0; i < MAX_THREAD_COUNT; i++) {*/
+	/*	int usersCount = round((USER_COUNT - usersAddedToArrays) / (MAX_THREAD_COUNT - i));*/
+	/*	for (int j = 0; j < usersCount; j++) {*/
+	/*		users[i] = usersArray[usersAddedToArrays + j];*/
+	/*	}*/
+	/*	usersAddedToArrays += usersCount;*/
+	/*}*/
+	/**/
+	/*for (int i = 0; i < users[0].Size(); i++) {*/
+	/*	User userTemporary = get_user_from_value(usersArray[i]);*/
+	/*	printf("%4d ", i + 1);*/
+	/*	userTemporary.print_user();*/
+	/*}*/
 
-	int i = 0;
-	while (pUsersMonitor->get_users_added() < USER_COUNT) {
-		pUsersMonitor->add_user_last(get_user_from_value(usersArray[i]));
-		i++;
-	}
-
-	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
-		int error = pthread_join(threads[i], NULL);
-		if (error != 0) {
-			printf("Thread cannot be joined: [%s]", strerror(error));
-		}
-	}
+	/*omp_set_num_threads(MAX_THREAD_COUNT);*/
+	/*#pragma omp parallel shared(MAX_THREAD_COUNT) default(none)*/
+	/*{*/
+	/*	const int THREAD_NUM = omp_get_thread_num() - 1;*/
+	/*}*/
 
 	clock_t clockEnd = clock();
 	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
@@ -70,7 +68,6 @@ int main(int args, char *arg[]) {
 	pOpenMPMonitor->print_users_result_to_file(FILE_PATH_RESULT);
 	printf("Time spent: %lfs\n", timeSpent);
 
-	delete pUsersMonitor;
 	delete pOpenMPMonitor;
 	return 0;
 }
@@ -91,13 +88,4 @@ void read_file(const string &filePath, rapidjson::Document *pDocument) {
 		perror("Failed to parse into Document\n");
 		return;
 	}
-}
-
-void *create_thread(void *arg) {
-	OpenMPMonitor *pOpenMPMonitor = (OpenMPMonitor *) arg;
-	while (!pOpenMPMonitor->check_all_users_processed()) {
-		User userTemporary = pOpenMPMonitor->get_user_last_from_users_monitor();
-		pOpenMPMonitor->process_user_result(&userTemporary);
-	}
-	return NULL;
 }

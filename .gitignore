@@ -61,6 +61,7 @@ Laboratorinis1/src/cryptopp
 *.vim
 
 Laboratorinis1/users
+Laboratorinis1/openmp
 Laboratorinis1/dataGenerator
 Laboratorinis1/tests
 *.zip

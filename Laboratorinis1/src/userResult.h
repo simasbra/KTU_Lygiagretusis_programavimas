@@ -17,8 +17,8 @@ using namespace std;
 class UserResult {
 private:
 	User user_;
-	double sum_;
 	string hash_;
+	double sum_;
 
 public:
 	UserResult();

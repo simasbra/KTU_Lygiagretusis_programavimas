@@ -1,5 +1,5 @@
 # Compilator and flags
-CC = g++
+CC = g++-14
 CCXFLAGS = -Wall -Wextra -Werror
 
 # Directories
@@ -9,6 +9,7 @@ CRYPTOPP_DIR = $(SRCDIR)cryptopp
 
 # Source files
 SRCS_USERS = $(SRCDIR)mainA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
+SRCS_OPENMP = $(SRCDIR)mainB.cpp $(SRCDIR)user.cpp $(SRCDIR)userResult.cpp $(SRCDIR)openmpMonitor.cpp
 SRCS_TESTS = $(SRCDIR)testsA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
 SRCS_DATA_GENERATOR = $(SRCDIR)dataGenerator/dataGenerator.cpp
 
@@ -19,6 +20,7 @@ LIBS = $(CRYPTOPP_LIB) -lpthread
 
 # Targets
 TARGET_USERS = users
+TARGET_OPENMP = openmp
 TARGET_TESTS = tests
 TARGET_DATA_GENERATOR = dataGenerator
 
@@ -26,6 +28,9 @@ TARGET_DATA_GENERATOR = dataGenerator
 $(TARGET_USERS): $(SRCS_USERS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET_USERS) $(SRCS_USERS) $(LIBS)
 
+$(TARGET_OPENMP): $(SRCS_OPENMP)
+	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET_OPENMP) $(SRCS_OPENMP) $(CRYPTOPP_LIB) -fopenmp
+	
 $(TARGET_TESTS): $(SRCS_TESTS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET_TESTS) $(SRCS_TESTS) $(LIBS)
 
@@ -35,4 +40,4 @@ $(TARGET_DATA_GENERATOR): $(SRCS_DATA_GENERATOR)
 all: $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS)
 
 clean:
-	rm -f $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS)
+	rm -f $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS) $(TARGET_OPENMP)
