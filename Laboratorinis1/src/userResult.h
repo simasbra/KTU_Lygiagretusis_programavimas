@@ -37,6 +37,7 @@ public:
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();
+	void print_user_result_to_file(FILE *pFile);
 	string generate_string();
 };
 

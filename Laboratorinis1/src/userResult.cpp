@@ -59,8 +59,11 @@ bool UserResult::check_hash_ends_with_a_number() {
 }
 
 void UserResult::print_user_result() {
-	printf("Name: %-15s Year: %4d DayMonth: %5.2lf Hash: %-128s\n",
-	user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
+	printf("| %-20s | %10d | %10.2lf | %-128s |\n", user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
+}
+
+void UserResult::print_user_result_to_file(FILE *pFile) {
+	fprintf(pFile, "| %-20s | %10d | %10.2lf | %-128s |\n", user_.get_name().c_str(), user_.get_year(), user_.get_day_month(), hash_.c_str());
 }
 
 string UserResult::generate_string() {

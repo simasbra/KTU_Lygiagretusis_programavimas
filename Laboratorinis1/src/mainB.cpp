@@ -42,12 +42,36 @@ int main(int args, char *arg[]) {
 
 	vector<vector<User>> users = split_users_to_equal_parts(&usersArray, MAX_THREAD_COUNT, USER_COUNT);
 	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT);
-
 	omp_set_num_threads(MAX_THREAD_COUNT);
-	#pragma omp parallel shared(MAX_THREAD_COUNT) default(none)
+	int sumInt = 0;
+	float sumFloat = 0.0f;
+	#pragma omp parallel default(none) shared(users, pOpenMPMonitor, sumInt, sumFloat)
 	{
 		const int THREAD_NUM = omp_get_thread_num();
+		int localSumInt = 0;
+		float localSumFloat = 0.0f;
+		vector<User> usersTemporary = users[THREAD_NUM];
+		printf("Processing thread %d with %lu users.\n", THREAD_NUM, usersTemporary.size());
+		if (usersTemporary.empty()) {
+			printf("No users for thread %d\n", THREAD_NUM);
+		}
+		for (unsigned int i = 0; i < usersTemporary.size(); i++) {
+			User userTemporary = usersTemporary[i];
+			if (!userTemporary.is_valid()) {
+				continue;
+			}
+			if (pOpenMPMonitor->process_user_result(&userTemporary)) {
+				localSumInt += userTemporary.get_year();
+				localSumFloat += userTemporary.get_day_month();
+			}
+		}
+		#pragma omp atomic
+		sumInt += localSumInt;
+		#pragma omp atomic
+		sumFloat += localSumFloat;
 	}
+	pOpenMPMonitor->set_sum_int(sumInt);
+	pOpenMPMonitor->set_sum_float(sumFloat);
 
 	clock_t clockEnd = clock();
 	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;
@@ -83,7 +107,7 @@ vector<vector<User>> split_users_to_equal_parts(rapidjson::Value *pUsersArray, c
 	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
 		int usersCount = round((USER_COUNT - usersAddedToArrays) / (MAX_THREAD_COUNT - i));
 		for (int j = 0; j < usersCount; j++) {
-			User userTemporary = get_user_from_value(pUsersArray[usersAddedToArrays + j]);
+			User userTemporary = get_user_from_value((*pUsersArray)[usersAddedToArrays + j]);
 			users[i].push_back(userTemporary);
 		}
 		usersAddedToArrays += usersCount;

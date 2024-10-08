@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <string>
+#include <omp.h>
 #include "userResult.h"
 
 using namespace std;
@@ -17,14 +18,18 @@ private:
 	unsigned int usersProcessed_;
 	unsigned int usersToBeAdded_;
 	int sumInt_;
-	double sumDouble_;
+	float sumFloat_;
 
-	pthread_mutex_t mutex_;
-	pthread_cond_t conditionalUserAdded_;
+	omp_lock_t lock_;
 
 public:
 	OpenMPMonitor(int usersToBeAdded);
 	~OpenMPMonitor();
+
+	int get_sum_int();
+	double get_sum_float();
+	void set_sum_int(int newValue);
+	void set_sum_float(float newValue);
 
 	unsigned int get_current_size();
 	unsigned int get_users_processed();
@@ -36,7 +41,6 @@ public:
 	UserResult get_user_result_last();
 	bool check_all_users_processed();
 	bool process_user_result(User *pUserNew);
-	void sum_sums(int &sumInt, double &sumDouble);
 
 	void print_users_result();
 	void print_users_result_to_file(const string &filePath);
