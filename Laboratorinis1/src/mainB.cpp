@@ -29,6 +29,7 @@ int main(int args, char *arg[]) {
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		usersArray = jsonDocument["users"];
 		printf("Users: \n");
+		printf(" %3s | %-20s | %-10s | %-10s |\n", "No.", "Name", "Year", "Day Month");
 		for (unsigned int i = 0; i < usersArray.Size(); i++) {
 			User userTemporary = get_user_from_value(usersArray[i]);
 			printf("%4d ", i + 1);
