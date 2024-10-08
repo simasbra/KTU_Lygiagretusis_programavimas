@@ -45,17 +45,14 @@ int main(int args, char *arg[]) {
 	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT);
 	omp_set_num_threads(MAX_THREAD_COUNT);
 	int sumInt = 0;
-	float sumFloat = 0.0f;
+	float sumFloat = 0;
 	#pragma omp parallel default(none) shared(users, pOpenMPMonitor, sumInt, sumFloat)
 	{
 		const int THREAD_NUM = omp_get_thread_num();
 		int localSumInt = 0;
-		float localSumFloat = 0.0f;
+		float localSumFloat = 0;
 		vector<User> usersTemporary = users[THREAD_NUM];
-		printf("Processing thread %d with %lu users.\n", THREAD_NUM, usersTemporary.size());
-		if (usersTemporary.empty()) {
-			printf("No users for thread %d\n", THREAD_NUM);
-		}
+		printf("Processing thread %d with %lu users\n", THREAD_NUM, usersTemporary.size());
 		for (unsigned int i = 0; i < usersTemporary.size(); i++) {
 			User userTemporary = usersTemporary[i];
 			if (!userTemporary.is_valid()) {
