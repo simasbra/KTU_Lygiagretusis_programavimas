@@ -43,11 +43,11 @@ int main(int args, char *arg[]) {
 	vector<vector<User>> users = split_users_to_equal_parts(&usersArray, MAX_THREAD_COUNT, USER_COUNT);
 	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT);
 
-	/*omp_set_num_threads(MAX_THREAD_COUNT);*/
-	/*#pragma omp parallel shared(MAX_THREAD_COUNT) default(none)*/
-	/*{*/
-	/*	const int THREAD_NUM = omp_get_thread_num() - 1;*/
-	/*}*/
+	omp_set_num_threads(MAX_THREAD_COUNT);
+	#pragma omp parallel shared(MAX_THREAD_COUNT) default(none)
+	{
+		const int THREAD_NUM = omp_get_thread_num();
+	}
 
 	clock_t clockEnd = clock();
 	double timeSpent = (double)(clockEnd - clockBegin) / CLOCKS_PER_SEC;

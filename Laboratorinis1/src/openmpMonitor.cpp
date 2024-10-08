@@ -1,27 +1,15 @@
 #include "openmpMonitor.h"
+#include "user.h"
 
-OpenMPMonitor::OpenMPMonitor(int usersToBeAdded) : currentSize_(0), usersProcessed_(0), usersToBeAdded_(usersToBeAdded) {
-	int error;
-	if ((error = pthread_mutex_init(&mutex_, NULL)) != 0) {
-		printf("Mutex cannot be created: [%s]", strerror(error));
-		exit(EXIT_FAILURE);
-	}
-	if ((error = pthread_cond_init(&conditionalUserAdded_, NULL)) != 0) {
-		printf("Conditional variable cannot be created: [%s]", strerror(error));
-		exit(EXIT_FAILURE);
-	}
+OpenMPMonitor::OpenMPMonitor(int usersToBeAdded) :
+	currentSize_(0),
+	usersProcessed_(0),
+	usersToBeAdded_(usersToBeAdded),
+	sumInt_(0),
+	sumDouble_(0) {
 }
 
 OpenMPMonitor::~OpenMPMonitor() {
-	int error;
-	if ((error = pthread_mutex_destroy(&mutex_)) != 0) {
-		printf("Mutex cannot be created: [%s]", strerror(error));
-		exit(EXIT_FAILURE);
-	}
-	if ((error = pthread_cond_destroy(&conditionalUserAdded_)) != 0) {
-		printf("Conditional variable cannot be created: [%s]", strerror(error));
-		exit(EXIT_FAILURE);
-	}
 }
 
 unsigned int OpenMPMonitor::get_current_size() {
@@ -119,7 +107,6 @@ bool OpenMPMonitor::process_user_result(User *pUserNew) {
 	string message = pUserResultTemporary->generate_string();
 	string hashedOutput = pUserResultTemporary->hash_using_blake2b(pUserResultTemporary->hash_using_sha256(message));
 	pUserResultTemporary->set_hash(hashedOutput);
-	pUserResultTemporary->calculate_set_sum();
 	increase_users_processed();
 	if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 		add_user_result_sorted(*pUserResultTemporary);
@@ -128,11 +115,16 @@ bool OpenMPMonitor::process_user_result(User *pUserNew) {
 	return true;
 }
 
+void OpenMPMonitor::sum_sums(int &sumInt, double &sumDouble) {
+	sumInt_ += sumInt;
+	sumDouble_ += sumDouble;
+}
+
 void OpenMPMonitor::print_users_result() {
 	pthread_mutex_lock(&mutex_);
 	for (unsigned int i = 0; i < currentSize_; i++) {
 		printf("%-4d ", i + 1);
-		usersResult_[i].print_user_result_with_sum();
+		usersResult_[i].print_user_result();
 	}
 	pthread_mutex_unlock(&mutex_);
 }
@@ -145,20 +137,20 @@ void OpenMPMonitor::print_users_result_to_file(const string &filePath) {
 		return;
 	}
 
-	string dashes = "+----------------------+------------+------------+------------+----------------------------------------------------------------------------------------------------------------------------------+";
+	string dashes = "+----------------------+------------+------------+----------------------------------------------------------------------------------------------------------------------------------+";
 	fprintf(pFile, "%s\n", dashes.c_str());
-	fprintf(pFile, "| %-20s | %-10s | %-10s | %-10s | %-128s |\n", "Name", "Year", "Day Month", "Sum", "SHA256 + BLAKE2b hash");
+	fprintf(pFile, "| %-20s | %-10s | %-10s | %-128s |\n", "Name", "Year", "Day Month", "SHA256 + BLAKE2b hash");
 	fprintf(pFile, "%s\n", dashes.c_str());
 
 	for (unsigned int i = 0; i < currentSize_; i++) {
 		User user = usersResult_[i].get_user();
-		fprintf(pFile, "| %-20s | %10d | %10.2lf | %10.2lf | %-128s |\n",
-		  user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_sum(), usersResult_[i].get_hash().c_str());
+		fprintf(pFile, "| %-20s | %10d | %10.2lf | %-128s |\n",
+		  user.get_name().c_str(), user.get_year(), user.get_day_month(), usersResult_[i].get_hash().c_str());
 	}
 
 	fprintf(pFile, "%s\n", dashes.c_str());
 	fprintf(pFile, "| Users total: %-164d |\n", currentSize_);
-	fprintf(pFile, "%s\n", "+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+	fprintf(pFile, "%s\n", "+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 	fclose(pFile);
 	pthread_mutex_unlock(&mutex_);
 }

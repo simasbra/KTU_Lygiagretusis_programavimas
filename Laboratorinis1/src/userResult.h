@@ -18,7 +18,6 @@ class UserResult {
 private:
 	User user_;
 	string hash_;
-	double sum_;
 
 public:
 	UserResult();
@@ -28,7 +27,6 @@ public:
 
 	User get_user();
 	string get_hash();
-	double get_sum();
 
 	void set_user(User newUser);
 	void set_hash(string newHash);
@@ -39,9 +37,7 @@ public:
 	bool check_hash_ends_with_a_number();
 
 	void print_user_result();
-	void print_user_result_with_sum();
 	string generate_string();
-	void calculate_set_sum();
 };
 
 #endif

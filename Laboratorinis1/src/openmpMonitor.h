@@ -16,6 +16,8 @@ private:
 	unsigned int currentSize_;
 	unsigned int usersProcessed_;
 	unsigned int usersToBeAdded_;
+	int sumInt_;
+	double sumDouble_;
 
 	pthread_mutex_t mutex_;
 	pthread_cond_t conditionalUserAdded_;
@@ -34,6 +36,7 @@ public:
 	UserResult get_user_result_last();
 	bool check_all_users_processed();
 	bool process_user_result(User *pUserNew);
+	void sum_sums(int &sumInt, double &sumDouble);
 
 	void print_users_result();
 	void print_users_result_to_file(const string &filePath);
