@@ -1,7 +1,7 @@
 #include "openmpMonitor.h"
 #include <omp.h>
 
-OpenMPMonitor::OpenMPMonitor(int usersToBeAdded) : currentSize_(0), usersProcessed_(0), usersToBeAdded_(usersToBeAdded), sumInt_(0), sumFloat_(0) {
+OpenMPMonitor::OpenMPMonitor() : currentSize_(0), sumInt_(0), sumFloat_(0) {
 	omp_init_lock(&lock_);
 }
 
@@ -27,20 +27,6 @@ void OpenMPMonitor::set_sum_float(float newValue) {
 
 unsigned int OpenMPMonitor::get_current_size() {
 	return currentSize_;
-}
-
-unsigned int OpenMPMonitor::get_users_processed() {
-	return usersProcessed_;
-}
-
-unsigned int OpenMPMonitor::get_users_to_be_added() {
-	return usersToBeAdded_;
-}
-
-void OpenMPMonitor::increase_users_processed() {
-	omp_set_lock(&lock_);
-	usersProcessed_++;
-	omp_unset_lock(&lock_);
 }
 
 void OpenMPMonitor::add_user_result_last(UserResult userResultNew) {
@@ -101,13 +87,6 @@ UserResult OpenMPMonitor::get_user_result_last() {
 	return userResultTemporary;
 }
 
-bool OpenMPMonitor::check_all_users_processed() {
-	if (usersProcessed_ == usersToBeAdded_) {
-		return true;
-	}
-	return false;
-}
-
 bool OpenMPMonitor::process_user_result(User *pUserNew) {
 	if (!pUserNew->is_valid()) {
 		return false;
@@ -118,7 +97,6 @@ bool OpenMPMonitor::process_user_result(User *pUserNew) {
 	string message = pUserResultTemporary->generate_string();
 	string hashedOutput = pUserResultTemporary->hash_using_blake2b(pUserResultTemporary->hash_using_sha256(message));
 	pUserResultTemporary->set_hash(hashedOutput);
-	increase_users_processed();
 	if (!pUserResultTemporary->check_hash_ends_with_a_number()) {
 		add_user_result_sorted(*pUserResultTemporary);
 		wasUserAdded = true;

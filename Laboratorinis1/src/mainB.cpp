@@ -42,15 +42,13 @@ int main(int args, char *arg[]) {
 	const int MAX_THREAD_COUNT = max(1, (int)min(USER_COUNT / 4, thread::hardware_concurrency()));
 
 	vector<vector<User>> users = split_users_to_equal_parts(&usersArray, MAX_THREAD_COUNT, USER_COUNT);
-	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor(USER_COUNT);
+	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor();
 	omp_set_num_threads(MAX_THREAD_COUNT);
 	int sumInt = 0;
 	float sumFloat = 0;
-	#pragma omp parallel default(none) shared(users, pOpenMPMonitor, sumInt, sumFloat)
+	#pragma omp parallel default(none) shared(users, pOpenMPMonitor) reduction(+:sumInt, sumFloat)
 	{
 		const int THREAD_NUM = omp_get_thread_num();
-		int localSumInt = 0;
-		float localSumFloat = 0;
 		vector<User> usersTemporary = users[THREAD_NUM];
 		printf("Processing thread %d with %lu users\n", THREAD_NUM, usersTemporary.size());
 		for (unsigned int i = 0; i < usersTemporary.size(); i++) {
@@ -59,14 +57,10 @@ int main(int args, char *arg[]) {
 				continue;
 			}
 			if (pOpenMPMonitor->process_user_result(&userTemporary)) {
-				localSumInt += userTemporary.get_year();
-				localSumFloat += userTemporary.get_day_month();
+				sumInt += userTemporary.get_year();
+				sumFloat += userTemporary.get_day_month();
 			}
 		}
-		#pragma omp atomic
-		sumInt += localSumInt;
-		#pragma omp atomic
-		sumFloat += localSumFloat;
 	}
 	pOpenMPMonitor->set_sum_int(sumInt);
 	pOpenMPMonitor->set_sum_float(sumFloat);
