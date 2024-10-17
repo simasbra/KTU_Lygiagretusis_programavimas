@@ -1,11 +1,11 @@
 #include <cstring>
 #include <ctime>
-#include <thread>
 #include <omp.h>
 #include <vector>
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "openmpMonitor.h"
+#include <unistd.h>
 
 using namespace std;
 
@@ -25,7 +25,6 @@ int main(int args, char *arg[]) {
 	rapidjson::Document jsonDocument;
 	read_file(FILE_PATH_DATA, &jsonDocument);
 	rapidjson::Value usersArray;
-
 	if (jsonDocument.HasMember("users") && jsonDocument["users"].IsArray()) {
 		usersArray = jsonDocument["users"];
 		printf("Users: \n");
@@ -39,7 +38,7 @@ int main(int args, char *arg[]) {
 
 	clock_t clockBegin = clock();
 	const unsigned int USER_COUNT = usersArray.Size();
-	const int MAX_THREAD_COUNT = max(1, (int)min(USER_COUNT / 4, thread::hardware_concurrency()));
+	const int MAX_THREAD_COUNT = max(1, (int)min((int)(USER_COUNT / 4), (int)sysconf(_SC_NPROCESSORS_ONLN)));
 
 	vector<vector<User>> users = split_users_to_equal_parts(&usersArray, MAX_THREAD_COUNT, USER_COUNT);
 	OpenMPMonitor *pOpenMPMonitor = new OpenMPMonitor();

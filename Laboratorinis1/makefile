@@ -10,7 +10,7 @@ CRYPTOPP_DIR = $(SRCDIR)cryptopp
 # Source files
 SRCS_USERS = $(SRCDIR)mainA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
 SRCS_OPENMP = $(SRCDIR)mainB.cpp $(SRCDIR)user.cpp $(SRCDIR)userResult.cpp $(SRCDIR)openmpMonitor.cpp
-SRCS_TESTS = $(SRCDIR)testsA.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
+SRCS_TESTS = $(SRCDIR)tests.cpp $(SRCDIR)user.cpp $(SRCDIR)usersMonitor.cpp $(SRCDIR)userResult.cpp $(SRCDIR)usersResultMonitor.cpp
 SRCS_DATA_GENERATOR = $(SRCDIR)dataGenerator/dataGenerator.cpp
 
 # Includes
@@ -25,6 +25,8 @@ TARGET_TESTS = tests
 TARGET_DATA_GENERATOR = dataGenerator
 
 # Rules
+all: $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS)
+
 $(TARGET_USERS): $(SRCS_USERS)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET_USERS) $(SRCS_USERS) $(LIBS)
 
@@ -37,7 +39,5 @@ $(TARGET_TESTS): $(SRCS_TESTS)
 $(TARGET_DATA_GENERATOR): $(SRCS_DATA_GENERATOR)
 	$(CC) $(CCXFLAGS) $(INCLUDES) -o $(TARGET_DATA_GENERATOR) $(SRCS_DATA_GENERATOR) $(LIBS)
 
-all: $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS)
-
 clean:
-	rm -f $(TARGET_USERS) $(TARGET_DATA_GENERATOR) $(TARGET_TESTS) $(TARGET_OPENMP)
+	rm -f $(TARGET_USERS) $(TARGET_OPENMP) $(TARGET_TESTS) $(TARGET_DATA_GENERATOR)
