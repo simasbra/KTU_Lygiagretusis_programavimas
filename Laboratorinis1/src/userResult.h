@@ -10,7 +10,6 @@
 #include "cryptopp/hex.h"
 #include "cryptopp/filters.h"
 #include "user.h"
-#include "user.h"
 
 using namespace std;
 
