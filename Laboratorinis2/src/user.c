@@ -1,5 +1,14 @@
 #include "user.h"
 #include <stdio.h>
+#include <string.h>
+
+User U_new(int yearNew, double dayMonthNew, char nameNew[]) {
+	User user;
+	user.year = yearNew;
+	user.dayMonth = dayMonthNew;
+	strcpy(user.name, nameNew);
+	return user;
+}
 
 int User_is_valid(User *pUser) {
 	if (pUser == NULL) {

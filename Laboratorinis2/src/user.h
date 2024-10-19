@@ -4,8 +4,7 @@
 typedef struct User {
 	double	dayMonth;
 	int	year;
-	int	nameLength;
-	char	name[];
+	char	name[32];
 } User;
 
 User	U_new(int yearNew, double dayMonthNew, char nameNew[]);

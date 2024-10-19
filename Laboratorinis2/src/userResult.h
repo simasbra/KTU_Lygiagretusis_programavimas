@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 typedef struct UserResult {
-	char	hash[128];
 	User	user;
+	char	hash[128];
 } UserResult;
 
 void	UR_generate_string(UserResult *pUserResult, char *pOutput[]);

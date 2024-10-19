@@ -13,13 +13,15 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput[]) {
 	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 
 	User userTemporary = pUserResult->user;
-	int multiplication = userTemporary.year * userTemporary.dayMonth;
-	char nameReversed[userTemporary.nameLength];
+	int nameLenght = strlen(userTemporary.name);
+	char nameReversed[nameLenght];
 	strcpy(nameReversed, userTemporary.name);
-	string_inplace_reverse(&nameReversed);
-	int messageLenght = (int)((ceil(log10(multiplication))) * sizeof(char)) + userTemporary.nameLength * 2 + 1;
+	string_inplace_reverse(nameReversed);
+
+	int multiplication = userTemporary.year * userTemporary.dayMonth;
+	int messageLenght = (int)((ceil(log10(multiplication))) * sizeof(char)) + nameLenght * 2 + 1;
 	char message[messageLenght];
-	sprintf(message, "%s%d", userTemporary.name, multiplication);
+	sprintf(message, "%s%d%s", userTemporary.name, multiplication, nameReversed);
 
 	char result[16];
 	char previous = message[0];
@@ -60,7 +62,7 @@ int UR_check_has_ends_with_a_number(UserResult *pUserResult) {
 	if (pUserResult == NULL) {
 		return 0;
 	}
-	if (isdigit(pUserResult->hash[128])) {
+	if (isdigit(pUserResult->hash[127])) {
 		return 1;
 	}
 	return 0;
@@ -87,14 +89,14 @@ void string_inplace_reverse(char *pString) {
 		return;
 	}
 	char *pEnd = pString + strlen(pString) + 1;
-	// swap values in two given variables
+	// Swap values in two given variables
 	#define XOR_SWAP(a, b) do\
 	{\
 		a ^= b;\
 		b ^= a;\
 		a ^= b;\
 	} while(0);
-	// walk inwards from both ends of the string, swapping until the middle
+	// Walk inwards from both ends of the string, swapping until the middle
 	while (pString < pEnd) {
 		XOR_SWAP(*pString, *pEnd);
 		pString++;
