@@ -5,26 +5,28 @@
 #include "user.h"
 
 typedef struct UserDataMonitor {
-	User users[16];
-	unsigned int currentSize;
-	unsigned int usersAdded;
+	User		users[16];
+	unsigned int	currentSize;
+	unsigned int	usersAdded;
 
-	pthread_mutex_t mutex;
-	pthread_cond_t conditionalUserAdded;
-	pthread_cond_t conditionalUserRemoved;
+	pthread_mutex_t	mutex;
+	pthread_cond_t	conditionalUserAdded;
+	pthread_cond_t	conditionalUserRemoved;
 } UserDataMonitor;
 
-unsigned int	UM_get_max_size(UserDataMonitor *pDataMonitor);
+unsigned int	UDM_get_max_size			(UserDataMonitor *pUserDataMonitor);
+void		UDM_initialize_pthreads			(UserDataMonitor *pUserDataMonitor);
+void		UDM_destroy_pthreads			(UserDataMonitor *pUserDataMonitor);
 
-pthread_mutex_t	*UM_get_mutex(UserDataMonitor *pDataMonitor);
-pthread_cond_t	*UM_get_conditional_user_added(UserDataMonitor *pDataMonitor);
-pthread_cond_t	*UM_get_conditional_user_removed(UserDataMonitor *pDataMonitor);
+pthread_mutex_t	*UDM_get_mutex				(UserDataMonitor *pUserDataMonitor);
+pthread_cond_t	*UDM_get_conditional_user_added		(UserDataMonitor *pUserDataMonitor);
+pthread_cond_t	*UDM_get_conditional_user_removed	(UserDataMonitor *pUserDataMonitor);
 
-void		UM_add_user_last(UserDataMonitor *pDataMonitor, User userNew);
-void		UM_add_user_sorted(UserDataMonitor *pDataMonitor, User userNew);
-User		UM_remove_user_last(UserDataMonitor *pDataMonitor);
+void		UDM_add_user_last			(UserDataMonitor *pUserDataMonitor, User userNew);
+void		UDM_add_user_sorted			(UserDataMonitor *pUserDataMonitor, User userNew);
+User		UDM_remove_user_last			(UserDataMonitor *pUserDataMonitor);
 
-int		UM_check_is_space_available(UserDataMonitor *pDataMonitor);
-void		UM_print_users(UserDataMonitor *pDataMonitor);
+int		UDM_check_is_space_available		(UserDataMonitor *pUserDataMonitor);
+void		UDM_print_users				(UserDataMonitor *pUserDataMonitor);
 
 #endif

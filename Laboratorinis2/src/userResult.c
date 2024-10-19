@@ -6,9 +6,7 @@
 #include <string.h>
 
 void UR_generate_string(UserResult *pUserResult, char *pOutput[]) {
-	if (pUserResult == NULL) {
-		return;
-	}
+	if (!pUserResult) return;
 	regex_t regex;
 	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 
@@ -59,9 +57,7 @@ void	UR_hash_using_sha256(char *pMessage[], char *pHash[]);
 void	UR_hash_using_blake2b(char *pMessage[], char *pHash[]);
 
 int UR_check_has_ends_with_a_number(UserResult *pUserResult) {
-	if (pUserResult == NULL) {
-		return 0;
-	}
+	if (!pUserResult) return 0;
 	if (isdigit(pUserResult->hash[127])) {
 		return 1;
 	}
@@ -69,25 +65,19 @@ int UR_check_has_ends_with_a_number(UserResult *pUserResult) {
 }
 
 void UR_print_user_result(UserResult *pUserResult){
-	if (pUserResult == NULL) {
-		return;
-	}
+	if (!pUserResult) return;
 	printf("| %-20s | %10d | %10.2lf | %-128s |\n",
-		pUserResult->user.name, pUserResult->user.year, pUserResult->user.dayMonth, pUserResult->hash);
+	pUserResult->user.name, pUserResult->user.year, pUserResult->user.dayMonth, pUserResult->hash);
 }
 
 void UR_print_user_result_to_file(UserResult *pUserResult, FILE *pFile) {
-	if (pUserResult == NULL) {
-		return;
-	}
+	if (!pUserResult) return;
 	fprintf(pFile, "| %-20s | %10d | %10.2lf | %-128s |\n",
-		pUserResult->user.name, pUserResult->user.year, pUserResult->user.dayMonth, pUserResult->hash);
+	 pUserResult->user.name, pUserResult->user.year, pUserResult->user.dayMonth, pUserResult->hash);
 }
 
 void string_inplace_reverse(char *pString) {
-	if (!pString) {
-		return;
-	}
+	if (!pString) return;
 	char *pEnd = pString + strlen(pString) + 1;
 	// Swap values in two given variables
 	#define XOR_SWAP(a, b) do\
