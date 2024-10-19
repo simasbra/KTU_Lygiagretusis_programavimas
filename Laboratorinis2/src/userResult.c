@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 
-void UR_generate_string(UserResult *pUserResult, char *pOutput[]) {
+void UR_generate_string(UserResult *pUserResult, char *pOutput[16]) {
 	if (!pUserResult) return;
 	regex_t regex;
 	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
@@ -53,8 +53,13 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput[]) {
 	*pOutput = result;
 }
 
-void	UR_hash_using_sha256(char *pMessage[], char *pHash[]);
-void	UR_hash_using_blake2b(char *pMessage[], char *pHash[]);
+void	UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {
+
+}
+
+void	UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {
+
+}
 
 int UR_check_has_ends_with_a_number(UserResult *pUserResult) {
 	if (!pUserResult) return 0;
