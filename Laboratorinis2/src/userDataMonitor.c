@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+void UDM_initialize_user_data_monitor(UserDataMonitor *pDataMonitor) {
+	if (!pDataMonitor) return;
+	pDataMonitor->currentSize = 0;
+	pDataMonitor->usersAdded = 0;
+	UDM_initialize_pthreads(pDataMonitor);
+}
+
 unsigned int UDM_get_monitor_max_size(UserDataMonitor *pDataMonitor) {
 	if (!pDataMonitor) return 0;
 	return sizeof(pDataMonitor->users) / sizeof(pDataMonitor->users[0]);
@@ -95,7 +102,7 @@ void UDM_add_user_sorted(UserDataMonitor *pDataMonitor, User userNew) {
 }
 
 User UDM_remove_user_last(UserDataMonitor *pDataMonitor) {
-	User userEmpty;
+	User userEmpty = {0};
 	if (!pDataMonitor) return userEmpty;
 
 	pthread_mutex_lock(&pDataMonitor->mutex);

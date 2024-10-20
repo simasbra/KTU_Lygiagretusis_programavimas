@@ -54,14 +54,16 @@ dkms.conf
 # Custom
 p170b328-code-examples
 
-Laboratorinis1/src/cjson
 Laboratorinis1/src/rapidjson
 Laboratorinis1/src/cryptopp
+Laboratorinis2/src/include/cJSON
 
 *.vim
+*.zip
 
+# Executables
 Laboratorinis1/users
 Laboratorinis1/openmp
 Laboratorinis1/dataGenerator
 Laboratorinis1/tests
-*.zip
+Laboratorinis2/users

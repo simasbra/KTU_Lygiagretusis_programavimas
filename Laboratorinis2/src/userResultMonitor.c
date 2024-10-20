@@ -5,9 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-unsigned int URM_get_monitor_max_size(UserResultMonitor *pResultMonitor) {
-	if (!pResultMonitor) return 0;
-	return sizeof(pResultMonitor->usersResult) / sizeof(pResultMonitor->usersResult[0]);
+void URM_initialize_user_result_monitor(UserResultMonitor *pResultMonitor, UserDataMonitor *pDataMonitor, unsigned int usersToBeAdded) {
+	if (!pResultMonitor || !pDataMonitor) return;
+	pResultMonitor->pUserDataMonitor = pDataMonitor;
+	pResultMonitor->currentSize = 0;
+	pResultMonitor->usersProcessed = 0;
+	pResultMonitor->usersToBeAdded = usersToBeAdded;
+	URM_initialize_pthreads(pResultMonitor);
 }
 
 void URM_initialize_pthreads(UserResultMonitor *pResultMonitor) {
@@ -36,16 +40,40 @@ void URM_destroy_pthreads(UserResultMonitor *pResultMonitor) {
 	}
 }
 
-void URM_add_user_result_last(UserResultMonitor *pResultMonitor, UserResult userResultNew) {
-	if (!pResultMonitor) return;
+unsigned int URM_get_monitor_max_size(UserResultMonitor *pResultMonitor) {
+	if (!pResultMonitor) return 0;
+	return sizeof(pResultMonitor->usersResult) / sizeof(pResultMonitor->usersResult[0]);
 }
+
+/*void URM_add_user_result_last(UserResultMonitor *pResultMonitor, UserResult userResultNew) {*/
+/*	if (!pResultMonitor) return;*/
+/*}*/
+/**/
 
 void URM_add_user_result_sorted(UserResultMonitor *pResultMonitor, UserResult userResultNew) {
 	if (!pResultMonitor) return;
+	pthread_mutex_lock(&pResultMonitor->mutex);
+	if (pResultMonitor->currentSize == URM_get_monitor_max_size(pResultMonitor)) {
+		printf("UsersResultMonitor is full\n");
+		pthread_mutex_unlock(&pResultMonitor->mutex);
+		return;
+	}
+
+	int i;
+	for (i = pResultMonitor->currentSize - 1; i >= 0; i--) {
+		if (pResultMonitor->usersResult[i].hash < userResultNew.hash) {
+			break;
+		}
+		pResultMonitor->usersResult[i + 1] = pResultMonitor->usersResult[i];
+	}
+	pResultMonitor->usersResult[i + 1] = userResultNew;
+	pResultMonitor->currentSize++;
+	pthread_cond_signal(&pResultMonitor->conditionalUserResultAdded);
+	pthread_mutex_unlock(&pResultMonitor->mutex);
 }
 
 UserResult URM_remove_user_result_last(UserResultMonitor *pResultMonitor) {
-	UserResult userResultEmpty;
+	UserResult userResultEmpty = {0};
 	if (!pResultMonitor) return userResultEmpty;
 
 	pthread_mutex_lock(&pResultMonitor->mutex);
@@ -74,8 +102,10 @@ int URM_process_user_result(UserResultMonitor *pResultMonitor, User *pUserNew) {
 
 	int wasUserAdded = 0;
 	UserResult userResult;
-	char message[16];
-	UR_generate_string(&userResult, &message);
+	userResult.user = *pUserNew;
+	char *pMessage = NULL;
+	UR_generate_string(&userResult, pMessage);
+	printf("%s\n", pMessage);
 	char hashedOutput[128];
 	strcpy(userResult.hash, hashedOutput);
 	// increase processed

@@ -5,14 +5,14 @@
 #include <unistd.h>
 #include <string.h>
 
-void UR_generate_string(UserResult *pUserResult, char *(pOutput[16])) {
+void UR_generate_string(UserResult *pUserResult, char *pOutput) {
 	if (!pUserResult) return;
 	regex_t regex;
 	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 
 	User userTemporary = pUserResult->user;
 	int nameLenght = strlen(userTemporary.name);
-	char nameReversed[nameLenght];
+	char nameReversed[nameLenght + 1];
 	strcpy(nameReversed, userTemporary.name);
 	string_inplace_reverse(nameReversed);
 
@@ -23,9 +23,9 @@ void UR_generate_string(UserResult *pUserResult, char *(pOutput[16])) {
 
 	char result[16];
 	char previous = message[0];
-	int resultLenght = 0;
+	int resultLength = 0;
 
-	for (int i = 0; resultLenght < 16; i++) {
+	for (int i = 0; resultLength < 16; i++) {
 		char c = message[i % messageLenght];
 		switch(i % 5) {
 			case 0:
@@ -45,23 +45,25 @@ void UR_generate_string(UserResult *pUserResult, char *(pOutput[16])) {
 		}
 		char charStr[2] = { c, '\0' };
 		if (regexec(&regex, charStr, 0, NULL, 0) == 0) {
-			result[++resultLenght] += c;
-			resultLenght++;
+			result[++resultLength] += c;
+			resultLength++;
+			if (resultLength >= 16) break;
 		}
 		previous = c | message[i % messageLenght];
 	}
-	*pOutput = result;
+	strncpy(pOutput, result, 16);
+	pOutput[15] = '\0';
 }
 
-void	UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {
+/*void	UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {*/
+/**/
+/*}*/
+/**/
+/*void	UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {*/
+/**/
+/*}*/
 
-}
-
-void	UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {
-
-}
-
-int UR_check_ends_with_a_number(UserResult *pUserResult) {
+int UR_check_hash_ends_with_a_number(UserResult *pUserResult) {
 	if (!pUserResult) return 0;
 	if (isdigit(pUserResult->hash[127])) {
 		return 1;

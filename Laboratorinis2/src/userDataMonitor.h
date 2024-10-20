@@ -14,6 +14,7 @@ typedef struct UserDataMonitor {
 	pthread_cond_t	conditionalUserRemoved;
 } UserDataMonitor;
 
+void		UDM_initialize_user_data_monitor	(UserDataMonitor *pUserDataMonitor);
 unsigned int	UDM_get_monitor_max_size		(UserDataMonitor *pUserDataMonitor);
 void		UDM_initialize_pthreads			(UserDataMonitor *pUserDataMonitor);
 void		UDM_destroy_pthreads			(UserDataMonitor *pUserDataMonitor);
