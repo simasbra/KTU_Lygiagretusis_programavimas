@@ -60,6 +60,7 @@ Laboratorinis2/src/include/cJSON
 
 *.vim
 *.zip
+*.idea
 
 # Executables
 Laboratorinis1/users

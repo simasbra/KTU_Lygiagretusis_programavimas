@@ -55,11 +55,11 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput) {
 	pOutput[15] = '\0';
 }
 
-/*void	UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {*/
+/*void UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {*/
 /**/
 /*}*/
 /**/
-/*void	UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {*/
+/*void UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {*/
 /**/
 /*}*/
 

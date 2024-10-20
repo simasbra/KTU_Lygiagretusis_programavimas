@@ -1,4 +1,5 @@
 #include "include/customMath.h"
+#include "user.h"
 #include "userDataMonitor.h"
 #include "userResultMonitor.h"
 #include "include/cJSON/cJSON.h"
@@ -22,7 +23,7 @@ int main(int argc, char **argv) {
 	const char *FILE_PATH_DATA = argv[1];
 
 	// Read file
-	cJSON *pCjson;
+	cJSON *pCjson = NULL;
 	read_file(FILE_PATH_DATA, pCjson);
 
 	// Initialize constants
@@ -44,6 +45,19 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	// Adding users one by one
+	cJSON *pUsers = cJSON_GetObjectItemCaseSensitive(pCjson, "users");
+	cJSON *pUser = NULL;
+	cJSON_ArrayForEach(pUser, pUsers) {
+		cJSON *pName = cJSON_GetObjectItemCaseSensitive(pUser, "name");
+		cJSON *pYear = cJSON_GetObjectItemCaseSensitive(pUser, "year");
+		cJSON *pDayMonth = cJSON_GetObjectItemCaseSensitive(pUser, "dayMonth");
+		if (cJSON_IsString(pName) && cJSON_IsNumber(pYear) && cJSON_IsNumber(pDayMonth)) {
+			User userNew = U_new(pYear->valueint, pDayMonth->valuedouble, pName->valuestring);
+			UDM_add_user_last(pDataMonitor, userNew);
+		}
+	}
+
 	// Join threads
 	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
 		int error = pthread_join(threads[i], NULL);
@@ -53,6 +67,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Printing results
+	URM_print_users_result(pResultMonitor);
 	URM_print_users_result_to_file(pResultMonitor, &FILE_PATH_RESULT);
 
 	// Clean up
