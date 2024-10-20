@@ -75,7 +75,7 @@ void UDM_add_user_last(UserDataMonitor *pDataMonitor, User userNew) {
 void UDM_add_user_sorted(UserDataMonitor *pDataMonitor, User userNew) {
 	if (!pDataMonitor) return;
 	pthread_mutex_lock(&pDataMonitor->mutex);
-	const unsigned int MAX_SIZE = UDM_get_max_size(pDataMonitor);
+	const unsigned int MAX_SIZE = UDM_get_monitor_max_size(pDataMonitor);
 	while (pDataMonitor->currentSize == MAX_SIZE) {
 		pthread_cond_wait(&pDataMonitor->conditionalUserRemoved, &pDataMonitor->mutex);
 	}
@@ -113,7 +113,11 @@ User UDM_remove_user_last(UserDataMonitor *pDataMonitor) {
 
 int UDM_check_is_space_available(UserDataMonitor *pDataMonitor) {
 	if (!pDataMonitor) return 0;
-	return pDataMonitor->currentSize < UDM_get_max_size(pDataMonitor);
+	int spaceAvailable = 0;
+	pthread_mutex_lock(&pDataMonitor->mutex);
+	spaceAvailable = pDataMonitor->currentSize < UDM_get_monitor_max_size(pDataMonitor);
+	pthread_mutex_unlock(&pDataMonitor->mutex);
+	return spaceAvailable;
 }
 
 void UDM_print_users(UserDataMonitor *pDataMonitor) {

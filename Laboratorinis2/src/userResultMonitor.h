@@ -13,6 +13,7 @@ typedef struct UserResultMonitor {
 	pthread_mutex_t	mutex;
 	pthread_cond_t	conditionalUserResultAdded;
 
+	UserDataMonitor *pUserDataMonitor;
 	UserResult	usersResult[500];
 } UserResultMonitor;
 
@@ -26,7 +27,6 @@ UserResult	URM_remove_user_result_last		(UserResultMonitor *pUserResultMonitor);
 int		URM_check_all_users_processed		(UserResultMonitor *pUserResultMonitor);
 int		URM_process_user_result			(UserResultMonitor *pUserResultMonitor, User *pUserNew);
 
-User		URM_get_user_last_from_data_monitor	(UserResultMonitor *pUserResultMonitor);
 unsigned int	URM_get_data_monitor_current_size	(UserResultMonitor *pUserResultMonitor);
 int		URM_check_data_monitor_all_users_added	(UserResultMonitor *pUserResultMonitor);
 
