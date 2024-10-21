@@ -47,18 +47,19 @@ int main(int argc, char **argv) {
 	// Adding users one by one
 	cJSON *pUsers = cJSON_GetObjectItemCaseSensitive(pCjson, "users");
 	cJSON *pUser = NULL;
+	int i = 1;
 	cJSON_ArrayForEach(pUser, pUsers) {
 		cJSON *pName = cJSON_GetObjectItemCaseSensitive(pUser, "name");
 		cJSON *pYear = cJSON_GetObjectItemCaseSensitive(pUser, "year");
 		cJSON *pDayMonth = cJSON_GetObjectItemCaseSensitive(pUser, "dayMonth");
 		if (cJSON_IsString(pName) && cJSON_IsNumber(pYear) && cJSON_IsNumber(pDayMonth)) {
 			User userNew = U_new(pYear->valueint, pDayMonth->valuedouble, pName->valuestring);
+			printf("%5d", i);
 			U_print_user(&userNew);
 			UDM_add_user_last(pDataMonitor, userNew);
 		}
+		i++;
 	}
-	cJSON_Delete(pUsers);
-	cJSON_Delete(pUser);
 
 	// Join threads
 	for (int i = 0; i < MAX_THREAD_COUNT; i++) {
@@ -86,9 +87,11 @@ void *create_thread(void *arg) {
 	UserResultMonitor *pResultMonitor = (UserResultMonitor *) arg;
 	if (!pResultMonitor) return NULL;
 
-	while (URM_check_all_users_processed(pResultMonitor)) {
-		User userTemporary = UDM_remove_user_last(pResultMonitor->pUserDataMonitor);
-		URM_process_user_result(pResultMonitor, &userTemporary);
+	while (!URM_check_all_users_processed(pResultMonitor)) {
+		User userTemporary = URM_get_user_last_from_users_monitor(pResultMonitor);
+		if (U_is_valid(&userTemporary)) {
+			URM_process_user_result(pResultMonitor, &userTemporary);
+		}
 	}
 	return NULL;
 }
@@ -117,28 +120,10 @@ cJSON *read_file(const char *FILE_PATH_DATA) {
 	if (!pCjson) {
 		const char *pError = cJSON_GetErrorPtr();
 		if (pError) {
-			printf("Error parsing JSON data: %s\n", pError, stderr);
+			fprintf(stderr, "File %s cannot be opened.\n", FILE_PATH_DATA);
 		}
-		cJSON_Delete(pCjson);
+		/*cJSON_Delete(pCjson);*/
 	}
-
-	// Print all users
-	cJSON *pUsers = cJSON_GetObjectItemCaseSensitive(pCjson, "users");
-	cJSON *pUser = NULL;
-	int i = 1;
-	cJSON_ArrayForEach(pUser, pUsers) {
-		cJSON *pName = cJSON_GetObjectItemCaseSensitive(pUser, "name");
-		cJSON *pYear = cJSON_GetObjectItemCaseSensitive(pUser, "year");
-		cJSON *pDayMonth = cJSON_GetObjectItemCaseSensitive(pUser, "dayMonth");
-		if (cJSON_IsString(pName) && cJSON_IsNumber(pYear) && cJSON_IsNumber(pDayMonth)) {
-			User userNew = U_new(pYear->valueint, pDayMonth->valuedouble, pName->valuestring);
-			printf("%4d ", i);
-			U_print_user(&userNew);
-		}
-		i++;
-	}
-	cJSON_Delete(pUsers);
-	cJSON_Delete(pUser);
 
 	free(pBuffer);
 	return pCjson;

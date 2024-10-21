@@ -23,7 +23,6 @@ pthread_cond_t	*UDM_get_conditional_user_added		(UserDataMonitor *pUserDataMonit
 pthread_cond_t	*UDM_get_conditional_user_removed	(UserDataMonitor *pUserDataMonitor);
 
 void		UDM_add_user_last			(UserDataMonitor *pUserDataMonitor, User userNew);
-void		UDM_add_user_sorted			(UserDataMonitor *pUserDataMonitor, User userNew);
 User		UDM_remove_user_last			(UserDataMonitor *pUserDataMonitor);
 
 int		UDM_check_is_space_available		(UserDataMonitor *pUserDataMonitor);

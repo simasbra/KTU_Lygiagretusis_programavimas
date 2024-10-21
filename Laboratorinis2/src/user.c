@@ -6,7 +6,7 @@ User U_new(int yearNew, double dayMonthNew, char nameNew[]) {
 	User user;
 	user.year = yearNew;
 	user.dayMonth = dayMonthNew;
-	strcpy(user.name, nameNew);
+	strncpy(user.name, nameNew, sizeof(user.name) - 1);
 	return user;
 }
 

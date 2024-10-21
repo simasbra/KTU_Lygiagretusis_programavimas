@@ -27,10 +27,9 @@ void		URM_add_user_result_sorted		(UserResultMonitor *pUserResultMonitor, UserRe
 UserResult	URM_remove_user_result_last		(UserResultMonitor *pUserResultMonitor);
 int		URM_check_all_users_processed		(UserResultMonitor *pUserResultMonitor);
 int		URM_process_user_result			(UserResultMonitor *pUserResultMonitor, User *pUserNew);
-void		URM_increase_users_processed		(UserResultMonitor *pUserResultMonitor);
 
-unsigned int	URM_get_data_monitor_current_size	(UserResultMonitor *pUserResultMonitor);
 int		URM_check_data_monitor_all_users_added	(UserResultMonitor *pUserResultMonitor);
+User		URM_get_user_last_from_users_monitor	(UserResultMonitor *pResultMonitor);
 
 void		URM_print_users_result			(UserResultMonitor *pUserResultMonitor);
 void		URM_print_users_result_to_file		(UserResultMonitor *pUserResultMonitor, const char *pFilePath[]);

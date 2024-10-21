@@ -1,7 +1,7 @@
 #ifndef USER_H
 #define USER_H
 
-typedef struct User {
+typedef struct {
 	double	dayMonth;
 	int	year;
 	char	name[32];
