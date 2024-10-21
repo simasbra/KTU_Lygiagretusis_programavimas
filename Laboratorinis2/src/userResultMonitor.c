@@ -103,17 +103,26 @@ int URM_process_user_result(UserResultMonitor *pResultMonitor, User *pUserNew) {
 	int wasUserAdded = 0;
 	UserResult userResult;
 	userResult.user = *pUserNew;
+
 	char *pMessage = NULL;
 	UR_generate_string(&userResult, pMessage);
 	printf("%s\n", pMessage);
 	char hashedOutput[128];
 	strcpy(userResult.hash, hashedOutput);
-	// increase processed
-	if (UR_check_hash_ends_with_a_number(&userResult)) {
+
+	URM_increase_users_processed(pResultMonitor);
+	/*if (UR_check_hash_ends_with_a_number(&userResult)) {*/
 		URM_add_user_result_sorted(pResultMonitor, userResult);
 		wasUserAdded = 1;
-	}
+	/*}*/
 	return wasUserAdded;
+}
+
+void URM_increase_users_processed(UserResultMonitor *pResultMonitor) {
+	if (!pResultMonitor) return;
+	pthread_mutex_lock(&pResultMonitor->mutex);
+	pResultMonitor->usersProcessed++;
+	pthread_mutex_unlock(&pResultMonitor->mutex);
 }
 
 int URM_check_data_monitor_all_users_added(UserResultMonitor *pResultMonitor) {
@@ -149,7 +158,7 @@ void URM_print_users_result_to_file(UserResultMonitor *pResultMonitor, const cha
 
 	FILE *pFile = fopen(*pFilePath, "w");
 	if (pFile == NULL) {
-	pthread_mutex_lock(&pResultMonitor->mutex);
+		pthread_mutex_unlock(&pResultMonitor->mutex);
 		return;
 	}
 

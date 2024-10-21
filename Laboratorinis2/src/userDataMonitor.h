@@ -19,7 +19,6 @@ unsigned int	UDM_get_monitor_max_size		(UserDataMonitor *pUserDataMonitor);
 void		UDM_initialize_pthreads			(UserDataMonitor *pUserDataMonitor);
 void		UDM_destroy_pthreads			(UserDataMonitor *pUserDataMonitor);
 
-pthread_mutex_t	*UDM_get_mutex				(UserDataMonitor *pUserDataMonitor);
 pthread_cond_t	*UDM_get_conditional_user_added		(UserDataMonitor *pUserDataMonitor);
 pthread_cond_t	*UDM_get_conditional_user_removed	(UserDataMonitor *pUserDataMonitor);
 

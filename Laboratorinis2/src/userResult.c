@@ -1,7 +1,9 @@
 #include "userResult.h"
+#include "include/crypto-algorithms/sha256.h"
 #include <ctype.h>
 #include <math.h>
 #include <regex.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -55,10 +57,20 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput) {
 	pOutput[15] = '\0';
 }
 
-/*void UR_hash_using_sha256(char *pMessage[16], char *pHash[128]) {*/
-/**/
-/*}*/
-/**/
+void UR_hash_using_sha256(char *pMessage, char *pHash[32]) {
+	// Buffer to store the hash (BYTE array)
+	BYTE hash[SHA256_BLOCK_SIZE];
+	// Initialize the SHA-256 context
+	SHA256_CTX ctx;
+	sha256_init(&ctx);
+	// Update the context with the input string
+	sha256_update(&ctx, (const BYTE*)pMessage, strlen(pMessage));
+	// Finalize the hash computation
+	sha256_final(&ctx, hash);
+	// Copy the computed hash to the output buffer
+	memcpy(pHash, hash, SHA256_BLOCK_SIZE);
+}
+
 /*void UR_hash_using_blake2b(char *pMessage[16], char *pHash[128]) {*/
 /**/
 /*}*/
@@ -87,12 +99,12 @@ void string_inplace_reverse(char *pString) {
 	if (!pString) return;
 	char *pEnd = pString + strlen(pString) + 1;
 	// Swap values in two given variables
-	#define XOR_SWAP(a, b) do\
-	{\
-		a ^= b;\
-		b ^= a;\
-		a ^= b;\
-	} while(0);
+#define XOR_SWAP(a, b) do\
+{\
+	a ^= b;\
+	b ^= a;\
+	a ^= b;\
+} while(0);
 	// Walk inwards from both ends of the string, swapping until the middle
 	while (pString < pEnd) {
 		XOR_SWAP(*pString, *pEnd);
