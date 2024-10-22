@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
 
 	// Read file
 	cJSON *pCjson = read_file(FILE_PATH_DATA);
+	if (!pCjson) return 1;
 
 	// Initialize constants
 	const unsigned int USER_COUNT = cJSON_GetObjectItemCaseSensitive(pCjson, "usersCount")->valueint;
@@ -47,18 +48,17 @@ int main(int argc, char **argv) {
 	// Adding users one by one
 	cJSON *pUsers = cJSON_GetObjectItemCaseSensitive(pCjson, "users");
 	cJSON *pUser = NULL;
-	int i = 1;
+	int i = 0;
 	cJSON_ArrayForEach(pUser, pUsers) {
 		cJSON *pName = cJSON_GetObjectItemCaseSensitive(pUser, "name");
 		cJSON *pYear = cJSON_GetObjectItemCaseSensitive(pUser, "year");
 		cJSON *pDayMonth = cJSON_GetObjectItemCaseSensitive(pUser, "dayMonth");
 		if (cJSON_IsString(pName) && cJSON_IsNumber(pYear) && cJSON_IsNumber(pDayMonth)) {
 			User userNew = U_new(pYear->valueint, pDayMonth->valuedouble, pName->valuestring);
-			printf("%5d", i);
-			U_print_user(&userNew);
 			UDM_add_user_last(pDataMonitor, userNew);
+			printf("%4d", i++);
+			U_print_user(&userNew);
 		}
-		i++;
 	}
 
 	// Join threads
@@ -120,9 +120,9 @@ cJSON *read_file(const char *FILE_PATH_DATA) {
 	if (!pCjson) {
 		const char *pError = cJSON_GetErrorPtr();
 		if (pError) {
-			fprintf(stderr, "File %s cannot be opened.\n", FILE_PATH_DATA);
+			fprintf(stderr, "File %s cannot be read.\n", FILE_PATH_DATA);
+			cJSON_Delete(pCjson);
 		}
-		/*cJSON_Delete(pCjson);*/
 	}
 
 	free(pBuffer);

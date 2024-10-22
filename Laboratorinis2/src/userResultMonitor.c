@@ -45,24 +45,18 @@ unsigned int URM_get_monitor_max_size(UserResultMonitor *pResultMonitor) {
 	return sizeof(pResultMonitor->usersResult) / sizeof(UserResult);
 }
 
-/*void URM_add_user_result_last(UserResultMonitor *pResultMonitor, UserResult userResultNew) {*/
-/*	if (!pResultMonitor) return;*/
-/*}*/
-/**/
-
 void URM_add_user_result_sorted(UserResultMonitor *pResultMonitor, UserResult userResultNew) {
 	if (!pResultMonitor) return;
 	pthread_mutex_lock(&(pResultMonitor->mutex));
 	if (pResultMonitor->currentSize == URM_get_monitor_max_size(pResultMonitor)) {
 		printf("UsersResultMonitor is full\n");
 		pthread_mutex_unlock(&(pResultMonitor->mutex));
-		exit(EXIT_FAILURE);
 		return;
 	}
 
 	int i;
 	for (i = pResultMonitor->currentSize - 1; i >= 0; i--) {
-		if (pResultMonitor->usersResult[i].hash < userResultNew.hash) {
+		if (strcmp(pResultMonitor->usersResult[i].hash, userResultNew.hash) <= 0) {
 			break;
 		}
 		pResultMonitor->usersResult[i + 1] = pResultMonitor->usersResult[i];
@@ -101,10 +95,13 @@ int URM_process_user_result(UserResultMonitor *pResultMonitor, User *pUserNew) {
 	UserResult userResult;
 	userResult.user = *pUserNew;
 
-	char *pMessage = "test";
-	/*UR_generate_string(&userResult, pMessage);*/
+	char message[16];
+	UR_generate_string(&userResult, message);
+	strcpy(userResult.hash, message);
+
 	/*char hashedOutput[128];*/
-	strcpy(userResult.hash, pMessage);
+	/*UR_hash_using_sha256(message, hashedOutput);*/
+	/*strcpy(userResult.hash, hashedOutput);*/
 
 	pResultMonitor->usersProcessed++;
 	/*if (UR_check_hash_ends_with_a_number(&userResult)) {*/
@@ -116,7 +113,7 @@ int URM_process_user_result(UserResultMonitor *pResultMonitor, User *pUserNew) {
 
 User URM_get_user_last_from_users_monitor(UserResultMonitor *pResultMonitor) {
 	pthread_mutex_lock(&(pResultMonitor->mutex));
-	while (pResultMonitor->pUserDataMonitor->currentSize == 0 && !URM_check_data_monitor_all_users_added(pResultMonitor) && !URM_check_all_users_processed(pResultMonitor)) {
+	while (!URM_check_data_monitor_all_users_added(pResultMonitor) && !URM_check_all_users_processed(pResultMonitor) && pResultMonitor->pUserDataMonitor->currentSize == 0) {
 		pthread_cond_wait(&(pResultMonitor->pUserDataMonitor->conditionalUserAdded), &(pResultMonitor->mutex));
 	}
 	User userTemporary = {0};

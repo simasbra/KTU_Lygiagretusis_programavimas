@@ -63,12 +63,13 @@ pthread_cond_t *UDM_get_conditional_user_removed(UserDataMonitor *pDataMonitor) 
 void UDM_add_user_last(UserDataMonitor *pDataMonitor, User userNew) {
 	if (!pDataMonitor) return;
 	pthread_mutex_lock(&(pDataMonitor->mutex));
+
 	while (!UDM_check_is_space_available(pDataMonitor)) {
 		pthread_cond_wait(&(pDataMonitor->conditionalUserRemoved), &(pDataMonitor->mutex));
 	}
-
 	pDataMonitor->users[(pDataMonitor->currentSize)++] = userNew;
 	pDataMonitor->usersAdded++;
+
 	pthread_cond_signal((&pDataMonitor->conditionalUserAdded));
 	pthread_mutex_unlock(&(pDataMonitor->mutex));
 }

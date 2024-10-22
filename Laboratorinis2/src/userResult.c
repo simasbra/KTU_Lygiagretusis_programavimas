@@ -1,7 +1,7 @@
 #include "userResult.h"
 #include "include/crypto-algorithms/sha256.h"
+#include "user.h"
 #include <ctype.h>
-#include <math.h>
 #include <regex.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -13,22 +13,22 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput) {
 	regcomp(&regex, "[A-Za-z0-9!@#$%^&*()_\\-\\+={}\'\",.<>?`~]", REG_EXTENDED);
 
 	User userTemporary = pUserResult->user;
-	int nameLenght = strlen(userTemporary.name);
-	char nameReversed[nameLenght + 1];
+	if (!U_is_valid(&userTemporary)) return;
+	char nameReversed[32];
 	strcpy(nameReversed, userTemporary.name);
 	string_inplace_reverse(nameReversed);
 
-	int multiplication = userTemporary.year * userTemporary.dayMonth;
-	int messageLenght = (int)((ceil(log10(multiplication))) * sizeof(char)) + nameLenght * 2 + 1;
-	char message[messageLenght];
-	sprintf(message, "%s%d%s", userTemporary.name, multiplication, nameReversed);
+	double multiplication = userTemporary.year * userTemporary.dayMonth;
+	char message[256];
+	sprintf(message, "%s%.2lf%s", userTemporary.name, multiplication, nameReversed);
+	unsigned short mesageLength = strlen(message) - 1;
 
 	char result[16];
 	char previous = message[0];
 	int resultLength = 0;
 
-	for (int i = 0; resultLength < 16; i++) {
-		char c = message[i % messageLenght];
+	for (int i = 0; resultLength < 15; i++) {
+		char c = ~(message[i % mesageLength]);
 		switch(i % 5) {
 			case 0:
 				c = c | (previous & c);
@@ -40,24 +40,25 @@ void UR_generate_string(UserResult *pUserResult, char *pOutput) {
 				c = c & previous;
 				break;
 			case 3:
-				c = !c;
+				c = ~c;
 				break;
 			default:
 				break;
 		}
 		char charStr[2] = { c, '\0' };
 		if (regexec(&regex, charStr, 0, NULL, 0) == 0) {
-			result[++resultLength] += c;
-			resultLength++;
-			if (resultLength >= 16) break;
+			result[resultLength++] = c;
 		}
-		previous = c | message[i % messageLenght];
+		previous = c | message[i % mesageLength];
 	}
-	strncpy(pOutput, result, 16);
+	result[resultLength] = '\0';
+	string_inplace_reverse(result);
+	strncpy(pOutput, result, 15);
 	pOutput[15] = '\0';
+	regfree(&regex);
 }
 
-void UR_hash_using_sha256(char *pMessage, char *pHash[32]) {
+void UR_hash_using_sha256(char *pMessage, char *pHash) {
 	// Buffer to store the hash (BYTE array)
 	BYTE hash[SHA256_BLOCK_SIZE];
 	// Initialize the SHA-256 context
@@ -96,8 +97,8 @@ void UR_print_user_result_to_file(UserResult *pUserResult, FILE *pFile) {
 }
 
 void string_inplace_reverse(char *pString) {
-	if (!pString) return;
-	char *pEnd = pString + strlen(pString) + 1;
+	if (!pString || *pString == 0) return;
+	char *pEnd = pString + strlen(pString) - 1;
 	// Swap values in two given variables
 #define XOR_SWAP(a, b) do\
 {\

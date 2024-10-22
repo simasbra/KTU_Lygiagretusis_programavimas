@@ -10,8 +10,8 @@ typedef struct UserResult {
 } UserResult;
 
 void	UR_generate_string		(UserResult *pUserResult, char *pOutput);
-void	UR_hash_using_sha256		(char *pMessage, char *pHash[32]);
-void	UR_hash_using_blake2b		(char *pMessage, char *pHash[128]);
+void	UR_hash_using_sha256		(char *pMessage, char *pHash);
+void	UR_hash_using_blake2b		(char *pMessage, char *pHash);
 
 int	UR_check_hash_ends_with_a_number(UserResult *pUserResult);
 void	UR_print_user_result		(UserResult *pUserResult);

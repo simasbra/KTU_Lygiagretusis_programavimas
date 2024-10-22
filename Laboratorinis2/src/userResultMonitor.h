@@ -22,7 +22,6 @@ void		URM_initialize_pthreads			(UserResultMonitor *pUserResultMonitor);
 void		URM_destroy_pthreads			(UserResultMonitor *pUserResultMonitor);
 
 unsigned int	URM_get_monitor_max_size		(UserResultMonitor *pUserResultMonitor);
-void		URM_add_user_result_last		(UserResultMonitor *pUserResultMonitor, UserResult userResultNew);
 void		URM_add_user_result_sorted		(UserResultMonitor *pUserResultMonitor, UserResult userResultNew);
 UserResult	URM_remove_user_result_last		(UserResultMonitor *pUserResultMonitor);
 int		URM_check_all_users_processed		(UserResultMonitor *pUserResultMonitor);
